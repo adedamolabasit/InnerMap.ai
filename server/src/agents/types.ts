@@ -17,8 +17,11 @@ export interface ReflectionResult {
 export type ActionType = "todo" | "goal" | "reflect";
 
 export interface ActionAgentResult {
-  type: ActionType;
+  type: "todo" | "goal" | "reflect";
   content: string;
   duration?: string;
-  agenticHooks?: string[]; // e.g., ["calendar:add", "reminder:set"]
+  agenticHooks: ("calendar:add" | "reminder:set" | "todo:add")[];
+  completed?: boolean;
+  completedAt?: Date;
 }
+

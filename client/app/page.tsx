@@ -72,89 +72,104 @@ export default function Home() {
     },
   ])
   const [dream, setDream] = useState<DreamResponse>(
-    {
-      _id: "6974a4c0b6a174671377aa7e",
-      createdAt: "2026-01-24T10:53:52.625Z",
-      userId: "1",
-      dreamText:
-        "I found my self in a strange town, in the town, I was in the palace of the king, I was welcomed, by al and celebrated l,  for some reason I left the palace intentionally, like I got distracted or something, I couldn’t located the palace again, looking  at it, it was my fault that I couldn’t get to the palace again, I got distracted, i think  someone was showing me the way before but I got distracted till the person left,  i  think I got distracted playing in the river, so I tried to locate my way through the locals of that town, they kept giving me a wrong direction because anywhere go to with the direction I kept Getting lost the more, asking locals again I kept getting  lost the more, on my way, I met a mad man that way preventing me to pass a particular route, I fought him, and he fought me back but he didn’t really go away, until I saw one of my old friend who was familiar with that place,  so he helped me talk to the mad man from afar, I think he knows the language of the mad to trick him out of the way, I was able to pass that route so I asked him for the road to the palace , it’s like he gave me the wrong direction and at this point I don’t really trust the locals again, I was trying to locate the palace by my self, just to be sure my friend was not lying, I asked another local for the way to the palace I asked a woman and  her kid separately and they both told me two different things different from what my old friend said and I feel  what the mother and the son said ware influence by the presence of my old friend so at this point I don’t trust anyone but I tried to look for the palace myself, so I kept going and I asked the last man, they are two walking together , they don’t want to talk, they just walked past me and the man was aggressive in a way, but when I walked pass led him he said something to the other man he was walking with  that  he purposely didn’t tell me the route to the kings palace that he knows the place and  other people have been asking knows the place too, that they just don’t want to tell me because they are all jealous or in-secured that why do I have to be the one to be living the kings palace, and I work up",
-      intake: {
+{
+    userId: "1",
+    dreamText: "I found my self in a strange town, in the town, I was in the palace of the king, I was welcomed, by al and celebrated l,  for some reason I left the palace intentionally, like I got distracted or something, I couldn't located the palace again, looking  at it, it was my fault that I couldn't get to the palace again, I got distracted, i think  someone was showing me the way before but I got distracted till the person left,  i  think I got distracted playing in the river, so I tried to locate my way through the locals of that town, they kept giving me a wrong direction because anywhere go to with the direction I kept Getting lost the more, asking locals again I kept getting  lost the more, on my way, I met a mad man that way preventing me to pass a particular route, I fought him, and he fought me back but he didn't really go away, until I saw one of my old friend who was familiar with that place,  so he helped me talk to the mad man from afar, I think he knows the language of the mad to trick him out of the way, I was able to pass that route so I asked him for the road to the palace , it's like he gave me the wrong direction and at this point I don't really trust the locals again, I was trying to locate the palace by my self, just to be sure my friend was not lying, I asked another local for the way to the palace I asked a woman and  her kid separately and they both told me two different things different from what my old friend said and I feel  what the mother and the son said ware influence by the presence of my old friend so at this point I don't trust anyone but I tried to look for the palace myself, so I kept going and I asked the last man, they are two walking together , they don't want to talk, they just walked past me and the man was aggressive in a way, but when I walked pass led him he said something to the other man he was walking with  that  he purposely didn't tell me the route to the kings palace that he knows the place and  other people have been asking knows the place too, that they just don't want to tell me because they are all jealous or in-secured that why do I have to be the one to be living the kings palace, and I work up",
+    intake: {
         symbols: [
-          "strange town",
-          "king's palace",
-          "river",
-          "locals",
-          "mad man",
-          "old friend",
-          "mother and son",
-          "two men walking together",
+            "strange town",
+            "king's palace",
+            "river",
+            "locals",
+            "route",
+            "mad man"
         ],
         characters: [
-          "self",
-          "al (unclear if person or entity)",
-          "l (unclear if person or entity)",
-          "unknown locals",
-          "mad man",
-          "old friend",
-          "mother",
-          "son",
-          "two walking men",
+            "self",
+            "king",
+            "old friend",
+            "mad man",
+            "woman",
+            "woman's kid",
+            "two men walking together"
         ],
         emotions: [
-          "welcome",
-          "celebration",
-          "distraction",
-          "frustration",
-          "distrust",
-          "confusion",
-          "determination",
-          "conflict",
-          "suspicion",
-          "jealousy",
-          "insecurity",
+            "welcomed",
+            "celebrated",
+            "distracted",
+            "lost",
+            "frustrated",
+            "distrust",
+            "conflicted",
+            "confused",
+            "aggressed"
         ],
         actions: [
-          "left palace intentionally",
-          "got distracted playing in river",
-          "asked locals for directions",
-          "fought mad man",
-          "received help from old friend to bypass mad man",
-          "questioned directions given by locals and friend",
-          "attempted to find palace independently",
+            "left palace intentionally",
+            "got distracted playing in river",
+            "asked locals for directions",
+            "fought mad man",
+            "received help from old friend",
+            "questioned trustworthiness of locals",
+            "searched for palace independently",
+            "confronted by two men who refused to help"
         ],
         repeated_elements: [
-          "getting lost",
-          "wrong directions",
-          "distrust of locals",
-          "asking for directions",
-          "conflicting information about palace location",
+            "getting lost",
+            "asking locals for directions",
+            "distrust of others"
         ],
-        agency: 0.4,
-      },
-      reflection: {
-        themes: [
-          "Seeking Belonging and Acceptance",
-          "Distraction and Responsibility",
-          "Trust and Mistrust",
-          "Navigating Challenges and Obstacles",
-          "Loneliness and Isolation",
-          "Support from Familiarity",
-          "Insecurity and Jealousy in Others",
-        ],
-        insights:
-          "This dream gently explores the inner journey of seeking a place where you feel valued and celebrated (the king's palace), while grappling with distractions and the consequences of losing your way. It highlights a struggle with whom to trust, reflecting vulnerabilities around relying on others and discerning true guidance. The presence of obstacles and misleading directions may symbolize internal doubts or external barriers on your path toward fulfillment or self-realization. Moments of connection, such as the help from an old friend, show the importance of familiar support, even amidst uncertainty and mistrust. The dream also touches on how others' insecurities and jealousy may impact your progress, inviting compassion for both yourself and those around you.",
-        suggested_action_hint:
-          "Reflect gently on areas in your life where you may feel lost or distracted, and consider where you might seek trustworthy support or clearer direction. Cultivate patience and kindness toward yourself as you navigate these challenges, and be mindful of how others' feelings might influence your journey.",
-      },
-      action: {
-        type: "todo",
-        content:
-          "Spend 10 minutes reflecting quietly on moments when you felt both challenged and supported recently",
-        duration: "10 minutes",
-        agenticHooks: ["reminder:set"],
-      },
-      
+        agency: 0.3
     },
+    reflection: {
+        themes: [
+            "Feeling lost or disconnected despite initial acceptance",
+            "Distraction and the consequences of losing focus",
+            "Challenges in trusting others and discerning truth",
+            "The journey to reclaim a valuable or rightful place",
+            "Encountering obstacles and opposition",
+            "Seeking help and experiencing mixed support",
+            "Inner conflict between trust and skepticism",
+            "Feelings of jealousy and insecurity from others around you"
+        ],
+        insights: "This dream gently reflects your experience of being welcomed and valued but then losing your way due to distraction. It highlights your struggle to navigate external confusion and internal doubts, especially around whom to trust as you try to find your path back to a place of security or success. The interactions suggest a yearning for guidance balanced with awareness of deception or resistance from others, symbolizing a deeper exploration of self-trust and resilience.",
+        suggested_action_hint: "Consider reconnecting with what grounds and centers you to regain focus, and gently explore where you may be feeling uncertain about whom or what to trust in your waking life."
+    },
+    action: {
+        type: "reflect",
+        content: "Consider exploring moments in your waking life where you feel disconnected or distracted. Reflect on how trust and skepticism currently influence your relationships, and how these feelings may shape your inner conflicts. This reflection may gently guide you to recognize where you desire more clarity or support.",
+        agenticHooks: [
+            "Notice moments of distraction and their impact on your focus during the day.",
+            "Observe feelings of trust and doubt in your interactions with others.",
+            "Identify situations that evoke insecurity or jealousy and gently explore their origins."
+        ],
+        // hookResults: [
+        //     {
+        //         hook: "Notice moments of distraction and their impact on your focus during the day.",
+        //         status: "ignored",
+        //         executedAt: "2026-01-24T12:46:38.719Z",
+        //         _id: "6974bf2e3c2a1a98e63a5eef"
+        //     },
+        //     {
+        //         hook: "Observe feelings of trust and doubt in your interactions with others.",
+        //         status: "ignored",
+        //         executedAt: "2026-01-24T12:46:38.719Z",
+        //         _id: "6974bf2e3c2a1a98e63a5ef0"
+        //     },
+        //     {
+        //         hook: "Identify situations that evoke insecurity or jealousy and gently explore their origins.",
+        //         status: "ignored",
+        //         executedAt: "2026-01-24T12:46:38.719Z",
+        //         _id: "6974bf2e3c2a1a98e63a5ef1"
+        //     }
+        // ],
+        // completed: false,
+        // _id: "6974bf2e3c2a1a98e63a5eee"
+    },
+    _id: "6974bf2e3c2a1a98e63a5eed",
+    createdAt: "2026-01-24T12:46:38.732Z",
+
+}
   );
   const [selectedDream, setSelectedDream] = useState<Dream | null>(null);
 
