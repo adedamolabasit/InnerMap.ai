@@ -1,14 +1,35 @@
 'use client'
 
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 interface Dream {
-  id: string
-  title: string
-  content: string
-  date: string
-  mood?: string
+  _id: string
+  userId: string
+  dreamText: string
+  intake: {
+    symbols: string[]
+    characters: string[]
+    emotions: string[]
+    actions: string[]
+    repeated_elements: string[]
+    agency: number
+  }
+  reflection: {
+    themes: string[]
+    insights: string
+    suggested_action_hint: string
+  }
+  action: {
+    type: string
+    content: string
+    duration: string
+    agenticHooks: string[]
+  }
+  createdAt: string
 }
 
 interface DreamDetailsProps {
@@ -18,136 +39,443 @@ interface DreamDetailsProps {
 }
 
 export function DreamDetails({ dream, onBack, onDelete }: DreamDetailsProps) {
-  const analysisPoints = [
-    {
-      category: 'Themes',
-      items: ['Journey', 'Discovery', 'Growth'],
-    },
-    {
-      category: 'Emotions',
-      items: ['Wonder', 'Curiosity', 'Determination'],
-    },
-    {
-      category: 'Symbols',
-      items: ['Path', 'Light', 'Nature'],
-    },
-  ]
+  const [activeTab, setActiveTab] = useState('dream')
+  const [expandedCard, setExpandedCard] = useState<string | null>(null)
 
-  const wordCount = dream.content.split(/\s+/).filter(Boolean).length
+  const wordCount = dream.dreamText.split(/\s+/).filter(Boolean).length
+  const agencyPercentage = Math.round(dream.intake.agency * 100)
+
+  const getAgencyColor = (percentage: number) => {
+    if (percentage < 30) return 'text-red-500 bg-red-500/10'
+    if (percentage < 60) return 'text-yellow-500 bg-yellow-500/10'
+    return 'text-green-500 bg-green-500/10'
+  }
+
+  const toggleCard = (cardId: string) => {
+    setExpandedCard(expandedCard === cardId ? null : cardId)
+  }
+
+  // Analysis cards data
+  const analysisCards = [
+    {
+      id: 'symbols',
+      title: 'Symbols',
+      count: dream.intake.symbols.length,
+      icon: 'M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z',
+      summary: 'Key symbols and imagery from your dream',
+      details: (
+        <div className="flex flex-wrap gap-2 mt-3">
+          {dream.intake.symbols.map((symbol, index) => (
+            <Badge key={index} variant="secondary" className="text-sm">
+              {symbol}
+            </Badge>
+          ))}
+        </div>
+      )
+    },
+    {
+      id: 'characters',
+      title: 'Characters',
+      count: dream.intake.characters.length,
+      icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5 1.197v-1a6 6 0 00-9-5.197M9 21v-1a6 6 0 0112 0v1z',
+      summary: 'People and entities in your dream',
+      details: (
+        <div className="space-y-2 mt-3">
+          {dream.intake.characters.map((character, index) => (
+            <div key={index} className="flex items-center gap-2 text-sm">
+              <div className="w-2 h-2 rounded-full bg-primary" />
+              <span className="text-foreground">{character}</span>
+            </div>
+          ))}
+        </div>
+      )
+    },
+    {
+      id: 'emotions',
+      title: 'Emotions',
+      count: dream.intake.emotions.length,
+      icon: 'M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
+      summary: 'Emotional tones experienced',
+      details: (
+        <div className="flex flex-wrap gap-2 mt-3">
+          {dream.intake.emotions.map((emotion, index) => (
+            <Badge 
+              key={index} 
+              variant="outline"
+              className="bg-secondary/20 text-secondary-foreground border-secondary/30"
+            >
+              {emotion}
+            </Badge>
+          ))}
+        </div>
+      )
+    },
+    {
+      id: 'themes',
+      title: 'Themes',
+      count: dream.reflection.themes.length,
+      icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
+      summary: 'Major themes identified',
+      details: (
+        <div className="space-y-3 mt-3">
+          {dream.reflection.themes.map((theme, index) => (
+            <div key={index} className="p-3 bg-primary/5 rounded-lg border border-primary/10">
+              <p className="text-sm font-medium text-foreground">{theme}</p>
+            </div>
+          ))}
+        </div>
+      )
+    },
+    {
+      id: 'actions',
+      title: 'Actions',
+      count: dream.intake.actions.length,
+      icon: 'M13 10V3L4 14h7v7l9-11h-7z',
+      summary: 'Notable actions and behaviors',
+      details: (
+        <div className="space-y-3 mt-3">
+          {dream.intake.actions.map((action, index) => (
+            <div key={index} className="text-sm text-foreground pl-4 border-l-2 border-primary/30">
+              {action}
+            </div>
+          ))}
+        </div>
+      )
+    },
+    {
+      id: 'repetitions',
+      title: 'Repeated Elements',
+      count: dream.intake.repeated_elements.length,
+      icon: 'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15',
+      summary: 'Patterns and recurring elements',
+      details: (
+        <div className="space-y-2 mt-3">
+          {dream.intake.repeated_elements.map((element, index) => (
+            <div key={index} className="flex items-center gap-3 text-sm">
+              <div className="flex-1 h-px bg-border" />
+              <span className="text-muted-foreground whitespace-nowrap">{element}</span>
+              <div className="flex-1 h-px bg-border" />
+            </div>
+          ))}
+        </div>
+      )
+    }
+  ]
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
-      <div className="max-w-4xl mx-auto px-6 py-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <Button variant="ghost" onClick={onBack}>
-            ← Back
+        <div className="flex items-center justify-between mb-6 sm:mb-8">
+          <Button variant="ghost" onClick={onBack} className="gap-2">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Back to Dreams
           </Button>
           <Button
             variant="outline"
             onClick={() => {
-              if (window.confirm('Delete this dream?')) {
-                onDelete(dream.id)
+              if (window.confirm('Are you sure you want to delete this dream?')) {
+                onDelete(dream._id)
                 onBack()
               }
             }}
-            className="text-destructive hover:text-destructive"
+            className="text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/20"
           >
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
             Delete
           </Button>
         </div>
 
-        {/* Dream Content */}
-        <div className="space-y-6">
-          {/* Title and Meta */}
-          <Card className="p-8 border-border bg-card space-y-6">
-            <div className="space-y-3">
-              <h1 className="text-4xl font-bold text-foreground">{dream.title}</h1>
-              <div className="flex items-center gap-4 flex-wrap">
-                <span className="text-sm text-muted-foreground">
-                  {new Date(dream.date).toLocaleDateString('en-US', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })}
-                </span>
-                {dream.mood && (
-                  <span className="text-xs px-3 py-1 rounded-full bg-primary/10 text-primary">
-                    {dream.mood}
-                  </span>
-                )}
-                <span className="text-xs px-3 py-1 rounded-full bg-muted text-muted-foreground">
-                  {wordCount} words
-                </span>
+        {/* Main Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left Column - Stats and Analysis Cards */}
+          <div className="lg:col-span-1 space-y-6">
+            {/* Dream Info Card */}
+            <Card className="p-6 border-border bg-card">
+              <div className="space-y-4">
+                <div>
+                  <h1 className="text-2xl font-bold text-foreground mb-2">Dream Analysis</h1>
+                  <div className="flex items-center gap-2">
+                    <span className={`text-xs px-3 py-1 rounded-full ${getAgencyColor(agencyPercentage)}`}>
+                      {agencyPercentage}% Agency
+                    </span>
+                    <span className="text-xs px-3 py-1 rounded-full bg-muted text-muted-foreground">
+                      {wordCount} words
+                    </span>
+                  </div>
+                </div>
+                
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    {new Date(dream.createdAt).toLocaleDateString('en-US', {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })}
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                    User {dream.userId}
+                  </div>
+                </div>
               </div>
-            </div>
+            </Card>
 
-            {/* Dream Text */}
-            <div className="prose prose-invert max-w-none">
-              <p className="text-lg leading-relaxed text-foreground whitespace-pre-wrap">
-                {dream.content}
-              </p>
-            </div>
-          </Card>
-
-          {/* AI Analysis */}
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold text-foreground">Analysis</h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {analysisPoints.map((point, idx) => (
-                <Card key={idx} className="p-6 border-border bg-card space-y-4">
-                  <h3 className="font-semibold text-foreground text-sm">{point.category}</h3>
+            {/* Analysis Cards Grid */}
+            <div className="grid grid-cols-2 gap-4">
+              {analysisCards.map((card) => (
+                <Card 
+                  key={card.id}
+                  className={`p-4 border-border bg-card cursor-pointer transition-all duration-200 hover:shadow-md ${
+                    expandedCard === card.id ? 'ring-2 ring-primary' : ''
+                  }`}
+                  onClick={() => toggleCard(card.id)}
+                >
                   <div className="space-y-2">
-                    {point.items.map((item, itemIdx) => (
-                      <div
-                        key={itemIdx}
-                        className="flex items-center gap-2 text-sm text-foreground"
-                      >
-                        <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                        {item}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={card.icon} />
+                        </svg>
+                        <span className="text-sm font-medium text-foreground">{card.title}</span>
                       </div>
-                    ))}
+                      <span className="text-lg font-bold text-primary">{card.count}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{card.summary}</p>
+                    
+                    {/* Expanded Details */}
+                    {expandedCard === card.id && (
+                      <div className="animate-in slide-in-from-top-2 duration-200">
+                        {card.details}
+                        <div className="mt-3 pt-3 border-t border-border">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="w-full text-xs"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setExpandedCard(null)
+                            }}
+                          >
+                            Collapse
+                          </Button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </Card>
               ))}
             </div>
           </div>
 
-          {/* Interpretation */}
-          <Card className="p-8 border-border bg-gradient-to-br from-primary/5 to-accent/5">
-            <h2 className="text-lg font-semibold text-foreground mb-4">Interpretation</h2>
-            <div className="space-y-4 text-sm text-muted-foreground leading-relaxed">
-              <p>
-                This dream appears to center on themes of
-                <span className="text-primary font-semibold"> personal exploration</span> and
-                <span className="text-accent font-semibold"> growth</span>. The vivid imagery
-                suggests a strong connection to your subconscious desires and aspirations.
-              </p>
-              <p>
-                The recurring motifs in your dream work indicate that these themes are currently
-                significant in your waking life. They may reflect challenges you're navigating or
-                new directions you're considering.
-              </p>
-              <p>
-                Consider how these symbolic elements relate to your current situation. What
-                connections do you notice? These insights can guide your personal development
-                journey.
-              </p>
-            </div>
-          </Card>
+          {/* Right Column - Main Content Tabs */}
+          <div className="lg:col-span-2">
+            <Card className="border-border bg-card overflow-hidden">
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <div className="border-b border-border">
+                  <TabsList className="w-full justify-start rounded-none bg-transparent p-0 h-auto">
+                    <TabsTrigger 
+                      value="dream" 
+                      className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent py-4 px-6"
+                    >
+                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                      </svg>
+                      Dream Text
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="insights" 
+                      className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent py-4 px-6"
+                    >
+                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      Insights
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="practice" 
+                      className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent py-4 px-6"
+                    >
+                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                      </svg>
+                      Practice
+                    </TabsTrigger>
+                  </TabsList>
+                </div>
 
-          {/* Related Dreams */}
-          <Card className="p-6 border-border bg-card space-y-4">
-            <h3 className="font-semibold text-foreground">Related Themes</h3>
-            <p className="text-sm text-muted-foreground">
-              This dream shares similar themes and symbols with 3 other entries in your journal.
-            </p>
-            <Button variant="outline" className="w-full bg-transparent">
-              View Related Dreams
-            </Button>
-          </Card>
+                {/* Dream Text Tab */}
+                <TabsContent value="dream" className="p-0 m-0">
+                  <div className="p-6">
+                    <div className="space-y-4">
+                      <h2 className="text-xl font-semibold text-foreground">Dream Narrative</h2>
+                      <div className="prose prose-invert max-w-none">
+                        <div className="p-6 bg-muted/20 rounded-lg border border-border">
+                          <p className="text-base sm:text-lg leading-relaxed text-foreground whitespace-pre-wrap">
+                            {dream.dreamText}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      {/* Quick Stats */}
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+                        <Card className="p-4 border-border bg-card/50 text-center">
+                          <div className="text-sm text-muted-foreground">Total Words</div>
+                          <div className="text-2xl font-bold text-foreground">{wordCount}</div>
+                        </Card>
+                        <Card className="p-4 border-border bg-card/50 text-center">
+                          <div className="text-sm text-muted-foreground">Your Agency</div>
+                          <div className="text-2xl font-bold text-foreground">{agencyPercentage}%</div>
+                        </Card>
+                        <Card className="p-4 border-border bg-card/50 text-center">
+                          <div className="text-sm text-muted-foreground">Unique Symbols</div>
+                          <div className="text-2xl font-bold text-foreground">{dream.intake.symbols.length}</div>
+                        </Card>
+                        <Card className="p-4 border-border bg-card/50 text-center">
+                          <div className="text-sm text-muted-foreground">Characters</div>
+                          <div className="text-2xl font-bold text-foreground">{dream.intake.characters.length}</div>
+                        </Card>
+                      </div>
+                    </div>
+                  </div>
+                </TabsContent>
+
+                {/* Insights Tab */}
+                <TabsContent value="insights" className="p-0 m-0">
+                  <div className="p-6">
+                    <div className="space-y-6">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 rounded-full bg-primary/10">
+                          <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <h2 className="text-xl font-semibold text-foreground">Dream Insights</h2>
+                          <p className="text-sm text-muted-foreground">AI-powered interpretation of your dream</p>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-4">
+                        <div className="p-4 bg-background/50 rounded-lg border border-border">
+                          <p className="text-sm sm:text-base text-foreground leading-relaxed">
+                            {dream.reflection.insights}
+                          </p>
+                        </div>
+                        
+                        <div className="p-4 bg-accent/5 rounded-lg border border-accent/10">
+                          <h4 className="text-sm font-semibold text-accent mb-2">Suggested Reflection</h4>
+                          <p className="text-sm text-muted-foreground">
+                            {dream.reflection.suggested_action_hint}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Key Themes */}
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold text-foreground">Key Themes</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          {dream.reflection.themes.slice(0, 4).map((theme, index) => (
+                            <Card key={index} className="p-4 border-border bg-card/50">
+                              <div className="flex items-start gap-3">
+                                <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0" />
+                                <p className="text-sm font-medium text-foreground">{theme}</p>
+                              </div>
+                            </Card>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </TabsContent>
+
+                {/* Practice Tab */}
+                <TabsContent value="practice" className="p-0 m-0">
+                  <div className="p-6">
+                    <div className="space-y-6">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 rounded-full bg-primary/10">
+                          <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                          </svg>
+                        </div>
+                        <div>
+                          <h2 className="text-xl font-semibold text-foreground">Recommended Practice</h2>
+                          <p className="text-sm text-muted-foreground">Integrate insights from your dream</p>
+                        </div>
+                      </div>
+
+                      <Card className="p-6 border-border bg-gradient-to-r from-primary/10 to-accent/10">
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <h3 className="font-semibold text-foreground">{dream.action.type}</h3>
+                            <Badge variant="outline" className="flex items-center gap-1">
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                              {dream.action.duration}
+                            </Badge>
+                          </div>
+                          
+                          <div className="p-4 bg-background/50 rounded-lg">
+                            <p className="text-sm sm:text-base text-foreground leading-relaxed">
+                              {dream.action.content}
+                            </p>
+                          </div>
+
+                          <div className="space-y-3">
+                            <h4 className="text-sm font-semibold text-foreground">How to get started:</h4>
+                            <ol className="space-y-2 text-sm text-muted-foreground">
+                              <li className="flex items-start gap-2">
+                                <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">1</span>
+                                <span>Find a quiet space where you won't be disturbed</span>
+                              </li>
+                              <li className="flex items-start gap-2">
+                                <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">2</span>
+                                <span>Set a timer for {dream.action.duration}</span>
+                              </li>
+                              <li className="flex items-start gap-2">
+                                <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">3</span>
+                                <span>Reflect on the key themes from your dream</span>
+                              </li>
+                              <li className="flex items-start gap-2">
+                                <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">4</span>
+                                <span>Consider how these insights relate to your waking life</span>
+                              </li>
+                            </ol>
+                          </div>
+
+                          <Button className="w-full bg-primary hover:bg-primary/90">
+                            Start Reflection Practice
+                          </Button>
+                        </div>
+                      </Card>
+
+                      {/* Related Insights */}
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold text-foreground">Related Insights</h3>
+                        <Card className="p-4 border-border bg-card/50">
+                          <p className="text-sm text-muted-foreground">
+                            {dream.reflection.suggested_action_hint}
+                          </p>
+                        </Card>
+                      </div>
+                    </div>
+                  </div>
+                </TabsContent>
+              </Tabs>
+            </Card>
+          </div>
         </div>
       </div>
     </div>
