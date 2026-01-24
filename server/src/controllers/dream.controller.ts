@@ -1,4 +1,3 @@
-// src/controllers/dream.controller.ts
 import { Request, Response } from "express";
 import { analyzeDreamIntake } from "../agents/intake.agent";
 import { analyzeReflection } from "../agents/reflection.agent";
@@ -15,13 +14,10 @@ export const submitDream = async (req: Request, res: Response) => {
 
     const previousActionCompleted = lastDream?.action?.completed ?? false;
 
-    // 1️⃣ Intake Agent
     const intake = await analyzeDreamIntake(dreamText);
 
-    // 2️⃣ Reflection Agent
     const reflection = await analyzeReflection(dreamText);
 
-    // 3️⃣ Action Agent (conditional on agency)
     const action = await analyzeAction(
       reflection.themes,
       intake.agency,
@@ -40,7 +36,6 @@ export const submitDream = async (req: Request, res: Response) => {
       completed: false,
     };
 
-    // 4️⃣ Save to DB
     const dreamEntry = await Dream.create({
       userId,
       dreamText,
@@ -49,11 +44,6 @@ export const submitDream = async (req: Request, res: Response) => {
       action: storedAction,
     });
 
-    // 5️⃣ TODO: Action Execution
-    // if (action.type === 'todo') add to user's todo list
-    // if (action.type === 'goal') schedule goal tracker
-    // if (action.type === 'reflect') create reminder for journaling
-
     res.json(dreamEntry);
   } catch (err) {
     console.error(err);
@@ -61,22 +51,6 @@ export const submitDream = async (req: Request, res: Response) => {
   }
 };
 
-// src/controllers/dream.controller.ts
-// export const completeAction = async (req: Request, res: Response) => {
-//   try {
-//     const { dreamId, actionCompleted } = req.body;
-//     const dream = await Dream.findById(dreamId);
-//     if (!dream) return res.status(404).json({ error: "Dream not found" });
-
-//     dream.action.completed = actionCompleted;
-//     dream.save();
-
-//     // Optionally, feed back to agent for adaptive suggestions next time
-//     res.json(dream);
-//   } catch (err) {
-//     res.status(500).json({ error: "Failed to update action" });
-//   }
-// };
 
 export const completeAction = async (req: Request, res: Response) => {
   try {
@@ -95,3 +69,43 @@ export const completeAction = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to update action" });
   }
 };
+
+export const getUserDreams = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+
+    const dreams = await Dream.find({ userId }).sort({ createdAt: -1 });
+
+    const response = dreams.map((dream) => ({
+      id: dream._id.toString(),
+      content: dream.dreamText,
+      date: dream.createdAt.toISOString(),
+
+      // Optional: derive mood from intake emotions
+      mood: dream.intake?.emotions?.[0], 
+    }));
+
+    res.json(response);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch user dreams" });
+  }
+};
+
+
+export const getDreamById = async (req: Request, res: Response) => {
+  try {
+    const { dreamId } = req.params;
+
+    const dream = await Dream.findById(dreamId);
+    if (!dream) {
+      return res.status(404).json({ error: "Dream not found" });
+    }
+
+    res.json(dream);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch dream" });
+  }
+};
+

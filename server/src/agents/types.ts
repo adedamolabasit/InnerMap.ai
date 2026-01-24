@@ -20,8 +20,14 @@ export interface ActionAgentResult {
   type: "todo" | "goal" | "reflect";
   content: string;
   duration?: string;
-  agenticHooks: ("calendar:add" | "reminder:set" | "todo:add")[];
+  agenticHooks: (
+    | "calendar:add"
+    | "reminder:set"
+    | "todo:add"
+    | "doc:write"
+    | "notion:add"
+  )[];
+  agentMessage?: string;
   completed?: boolean;
   completedAt?: Date;
 }
-

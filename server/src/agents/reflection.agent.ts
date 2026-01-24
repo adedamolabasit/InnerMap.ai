@@ -17,12 +17,18 @@ Return JSON:
 }
 `;
 
-export const analyzeReflection = async (dreamText: string): Promise<ReflectionResult & { suggested_action_hint: string }> => {
+export const analyzeReflection = async (
+  dreamText: string
+): Promise<ReflectionResult & { suggested_action_hint: string }> => {
   const response = await openai.responses.create({
     model: "gpt-4.1-mini",
     input: reflectionAgentPrompt(dreamText),
   });
 
-  const raw = response.output_text.replace(/```/g, "").trim();
-  return JSON.parse(raw) as ReflectionResult & { suggested_action_hint: string };
+  // Extract JSON from output_text safely
+  const match = response.output_text.match(/\{[\s\S]*\}/);
+  if (!match) throw new Error("No JSON found in AI output");
+
+  return JSON.parse(match[0]) as ReflectionResult & { suggested_action_hint: string };
 };
+

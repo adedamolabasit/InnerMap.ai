@@ -35,10 +35,10 @@ interface Dream {
 interface DreamDetailsProps {
   dream: Dream
   onBack: () => void
-  onDelete: (id: string) => void
+  // onDelete: (id: string) => void
 }
 
-export function DreamDetails({ dream, onBack, onDelete }: DreamDetailsProps) {
+export function DreamDetails({ dream, onBack}: DreamDetailsProps) {
   const [activeTab, setActiveTab] = useState('dream')
   const [selectedAnalysis, setSelectedAnalysis] = useState<string | null>('symbols')
 
@@ -215,7 +215,7 @@ export function DreamDetails({ dream, onBack, onDelete }: DreamDetailsProps) {
             variant="outline"
             onClick={() => {
               if (window.confirm('Are you sure you want to delete this dream?')) {
-                onDelete(dream._id)
+                // onDelete(dream._id)
                 onBack()
               }
             }}

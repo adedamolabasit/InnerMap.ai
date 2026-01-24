@@ -1,7 +1,7 @@
 // src/agents/action.agent.ts
 import { openai } from "../services/openai.service";
 import { ActionAgentResult } from "./types";
-import { GLOBAL_SYSTEM_PROMPT } from "./utils/prompts";
+import { GLOBAL_SYSTEM_PROMPT } from "./prompts/prompts";
 
 export const actionAgentPrompt = (
   themes: string[],
@@ -17,18 +17,20 @@ Agency level: ${agency}
 Previous action completed: ${previousActionCompleted ? "yes" : "no"}
 
 Rules:
-- If agency < 0.5 OR previous action not completed → reflective action
-- If agency >= 0.5 AND previous action completed → proactive goal
-- If this is a proactive goal → include "calendar:add" or "todo:add"
-- If this is reflective → include "reminder:set"
-- Return **JSON only**, no extra explanation or text.
+- Decide the type of next action: "reflect", "todo", or "goal" based on agency and previous action completion.
+- If type is "reflect", suggest agenticHooks like ["doc:write", "notion:add"] or ["reminder:set"], depending on what best supports journaling, reflection, or insight generation.
+- If type is "todo", suggest ["todo:add"] or ["calendar:add"].
+- If type is "goal", suggest ["calendar:add", "todo:add"].
+- Include a short explanation in "agentMessage" describing **why this action was chosen** (shows agent reasoning).
+- Return **JSON only**, no extra text.
 
-Output format:
+Output format (valid JSON):
 {
   "type": "todo" | "goal" | "reflect",
   "content": "string describing the next step",
   "duration": "optional, e.g., '15 minutes', '1 day'",
-  "agenticHooks": ["calendar:add", "reminder:set", "todo:add"] 
+  "agenticHooks": ["calendar:add", "reminder:set", "todo:add", "doc:write", "notion:add"],
+  "agentMessage": "string explaining why this action was chosen"
 }
 `;
 

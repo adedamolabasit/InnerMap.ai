@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import { DreamListResponse } from '@/api/types'
 
 interface Dream {
   id: string
@@ -13,10 +14,10 @@ interface Dream {
 }
 
 interface DreamJournalProps {
-  dreams: Dream[]
+  dreams: DreamListResponse[]
   onNewDream: () => void
   onBack: () => void
-  onSelectDream: (dream: Dream) => void
+  onSelectDream: (dream: DreamListResponse) => void
 }
 
 export function DreamJournal({
@@ -28,17 +29,17 @@ export function DreamJournal({
   const [searchTerm, setSearchTerm] = useState('')
   const [sortBy, setSortBy] = useState<'date' | 'title'>('date')
 
-  const filteredDreams = dreams
-    .filter((dream) =>
-      dream.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      dream.content.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .sort((a, b) => {
-      if (sortBy === 'date') {
-        return new Date(b.date).getTime() - new Date(a.date).getTime()
-      }
-      return a.title.localeCompare(b.title)
-    })
+const filteredDreams = dreams
+  .filter((dream) =>
+    dream.content.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+  .sort((a, b) => {
+    if (sortBy === 'date') {
+      return new Date(b.date).getTime() - new Date(a.date).getTime()
+    }
+    return 0
+  })
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
@@ -103,9 +104,6 @@ export function DreamJournal({
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-lg font-semibold text-foreground truncate">
-                        {dream.title}
-                      </h3>
                       {dream.mood && (
                         <span className="text-xs px-2 py-1 rounded-full bg-primary/10 text-primary whitespace-nowrap">
                           {dream.mood}
