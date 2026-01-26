@@ -31,3 +31,30 @@ export interface DreamListResponse {
   date: string;
   mood?: string;
 }
+
+
+export interface DreamResponse {
+  _id: string;
+  userId: string;
+  dreamText: string;
+  intake: {
+    symbols: string[];
+    characters: string[];
+    emotions: string[];
+    actions: string[];
+    repeated_elements: string[];
+    agency: number;
+  };
+  reflection: {
+    themes: string[];
+    insights: string;
+    suggested_action_hint: string;
+  };
+  action: {
+    type: string;
+    content: string;
+    duration?: string;
+    agenticHooks: string[];
+  };
+  createdAt: string;
+}
