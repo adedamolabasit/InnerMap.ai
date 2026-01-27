@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import Providers from "./providers";
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
   title: "InnerMap - Dream Reflection & AI Insights",
@@ -33,6 +34,15 @@ export const metadata: Metadata = {
   },
 };
 
+export function getOrCreateVisitorId() {
+  let id = localStorage.getItem("visitorId");
+  if (!id) {
+    id = crypto.randomUUID();
+    localStorage.setItem("visitorId", id);
+  }
+  return id;
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -42,6 +52,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`font-sans antialiased`}>
         <Providers>{children}</Providers>
+        <Toaster />
         <Analytics />
       </body>
     </html>

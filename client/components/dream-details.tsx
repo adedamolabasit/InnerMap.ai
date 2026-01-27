@@ -36,13 +36,14 @@ interface DreamDetailsProps {
   dream: Dream;
   onBack: () => void;
   isLoading?: boolean;
-  // onDelete: (id: string) => void
+  onDelete: (id: string) => void
 }
 
 export function DreamDetails({
   dream,
   onBack,
   isLoading = false,
+  onDelete
 }: DreamDetailsProps) {
   const [activeTab, setActiveTab] = useState("dream");
   const [selectedAnalysis, setSelectedAnalysis] = useState<string | null>();
@@ -274,7 +275,7 @@ export function DreamDetails({
               if (
                 window.confirm("Are you sure you want to delete this dream?")
               ) {
-                // onDelete(dream._id)
+                onDelete(dream._id)
                 onBack();
               }
             }}

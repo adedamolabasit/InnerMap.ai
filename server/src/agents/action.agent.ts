@@ -1,7 +1,7 @@
 // src/agents/action.agent.ts
 import { openai } from "../services/openai.service";
 import { ActionAgentResult } from "./types";
-import { GLOBAL_SYSTEM_PROMPT } from "./prompts/prompts";
+import { GLOBAL_SYSTEM_PROMPT } from "./opik/prompts";
 
 export const actionAgentPrompt = (
   themes: string[],

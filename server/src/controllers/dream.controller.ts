@@ -6,6 +6,7 @@ import Dream from "../models/Dream";
 import { executeAgenticHooks } from "../services/agenticTools";
 import { StoredAction } from "../models/types";
 
+
 export const submitDream = async (req: Request, res: Response) => {
   try {
     const { userId, dreamText } = req.body;
@@ -106,6 +107,24 @@ export const getDreamById = async (req: Request, res: Response) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch dream" });
+  }
+};
+
+export const deleteDream = async (req: Request, res: Response) => {
+  try {
+    const { dreamId } = req.params;
+
+    const dream = await Dream.findById(dreamId);
+    if (!dream) {
+      return res.status(404).json({ error: "Dream not found" });
+    }
+
+    await Dream.deleteOne({ _id: dreamId });
+
+    res.json({ success: true, message: "Dream deleted successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to delete dream" });
   }
 };
 

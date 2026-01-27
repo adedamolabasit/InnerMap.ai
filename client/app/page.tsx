@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { LandingPage } from "@/components/landing-page";
 import { DreamCapture } from "@/components/dream-capture";
 import { DreamJournal } from "@/components/dream-journal";
@@ -10,7 +11,9 @@ import { useUserDreams } from "@/api/hooks/useQuery";
 import { useDream } from "@/api/hooks/useQuery";
 import { DreamListResponse } from "@/api/types";
 import { useCreateDream } from "@/api/hooks/useMutate";
+import { useDeleteDream } from "@/api/hooks/useMutate";
 import { DreamResponse } from "@/api/types";
+import { useToast } from "@/hooks/use-toast";
 
 interface Dream {
   id: string;
@@ -26,12 +29,19 @@ export default function Home() {
   const [currentView, setCurrentView] = useState<View>("landing");
   const [selectedDream, setSelectedDream] = useState<string>("");
   const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
 
+  const { toast } = useToast();
+
+  const params = new URLSearchParams(searchParams.toString());
   const {
     data: dreams = [],
     isLoading: loadingAllDreams,
     isError: dreamsError,
     error: dreamsErrorDetails,
+    refetch,
   } = useUserDreams("iiei");
 
   const {
@@ -59,6 +69,8 @@ export default function Home() {
 
   const { mutate: createDream, isPending: isCreatingDream } = useCreateDream();
 
+  const { mutate: deleteDream, isPending: isDeleting } = useDeleteDream();
+
   const handleSaveDream = (content: string) => {
     createDream(
       {
@@ -66,20 +78,68 @@ export default function Home() {
         userId: "iiei",
       },
       {
-        onSuccess: (data) => {
-          console.log("Dream analysis successful ✅", data);
+        onSuccess: () => {
+          setCurrentView("journal");
+          toast({
+            title: "Dream saved",
+            description: "Your dream was analyzed successfully.",
+          });
+          refetch();
         },
         onError: (error) => {
-          console.error("Dream analysis failed ❌", error);
+          toast({
+            title: "Something went wrong",
+            description:
+              error instanceof Error
+                ? error.message
+                : "Failed to analyze dream. Please try again.",
+            variant: "destructive",
+          });
         },
       },
     );
+  };
+
+  const handleDeleteDream = (dreamId: string) => {
+    deleteDream(dreamId, {
+      onSuccess: () => {
+        toast({
+          title: "Dream deleted",
+          description: "The dream has been removed from your journal.",
+        });
+
+        setSelectedDream("");
+        setCurrentView("journal");
+      },
+
+      onError: (error) => {
+        toast({
+          title: "Delete failed",
+          description:
+            error instanceof Error
+              ? error.message
+              : "Could not delete the dream. Please try again.",
+          variant: "destructive",
+        });
+
+        console.error("Dream delete failed ❌", error);
+      },
+    });
   };
 
   const handleSelectDream = (dreamId: string) => {
     setSelectedDream(dreamId);
     setCurrentView("details");
   };
+
+  console.log(currentView, "cur");
+
+  useEffect(() => {
+    if (currentView) {
+      params.set("view", currentView);
+      router.push(`${pathname}?${params.toString()}`);
+    }
+  }, [currentView]);
 
   const renderView = () => {
     switch (currentView) {
@@ -116,6 +176,7 @@ export default function Home() {
             dream={dream as DreamResponse}
             onBack={() => setCurrentView("journal")}
             isLoading={loadingDream}
+            onDelete={handleDeleteDream}
           />
         ) : null;
       default:

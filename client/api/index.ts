@@ -25,10 +25,19 @@ export const getDreamById = async (
   return apiClient<ApiResponse<DreamAnalysis>>(`/dream/${dreamId}`);
 };
 
+export const deleteDream = async (
+  dreamId: string
+): Promise<ApiResponse<DreamAnalysis>> => {
+  return apiClient<ApiResponse<DreamAnalysis>>(`/dream/${dreamId}`, {
+    method: 'DELETE',
+  });
+};
+
 
 
 export const dreamService = {
   createDreamAnalysis,
   getUserDreams,
   getDreamById,
+  deleteDream
 };

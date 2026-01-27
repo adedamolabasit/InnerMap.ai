@@ -4,6 +4,7 @@ import {
   completeAction,
   getUserDreams,
   getDreamById,
+  deleteDream
 } from "../controllers/dream.controller";
 
 const router = Router();
@@ -19,5 +20,7 @@ router.get("/dreams/:userId", getUserDreams);
 
 // 🔹 Get a single dream by id
 router.get("/dream/:dreamId", getDreamById);
+
+router.delete("/dream/:dreamId", deleteDream); // <-- new delete route
 
 export default router;
