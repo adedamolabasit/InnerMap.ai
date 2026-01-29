@@ -33,6 +33,8 @@ export default function Home() {
   const router = useRouter();
   const pathname = usePathname();
 
+  const dreamIdFromUrl = searchParams.get("dreamId");
+
   const { toast } = useToast();
 
   const params = new URLSearchParams(searchParams.toString());
@@ -49,7 +51,7 @@ export default function Home() {
     isLoading: loadingDream,
     isError: dreamError,
     error: dreamErrorDetails,
-  } = useDream(selectedDream as string);
+  } = useDream(dreamIdFromUrl as string);
 
   useEffect(() => {
     if (currentView === "landing") {
@@ -101,6 +103,8 @@ export default function Home() {
   };
 
   const handleDeleteDream = (dreamId: string) => {
+    console.log(dreamId, "dreamId>>>>>>>>");
+
     deleteDream(dreamId, {
       onSuccess: () => {
         toast({
@@ -110,6 +114,7 @@ export default function Home() {
 
         setSelectedDream("");
         setCurrentView("journal");
+        refetch();
       },
 
       onError: (error) => {
@@ -128,18 +133,31 @@ export default function Home() {
   };
 
   const handleSelectDream = (dreamId: string) => {
-    setSelectedDream(dreamId);
-    setCurrentView("details");
+    router.push(`${pathname}?view=details&dreamId=${dreamId}`);
   };
 
-  console.log(currentView, "cur");
+  // useEffect(() => {
+  //   if (currentView) {
+  //     params.set("view", currentView);
+  //     router.push(`${pathname}?${params.toString()}`);
+  //   }
+  // }, [currentView]);
 
   useEffect(() => {
-    if (currentView) {
-      params.set("view", currentView);
-      router.push(`${pathname}?${params.toString()}`);
+    const view = searchParams.get("view") as View | null;
+    const dreamId = searchParams.get("dreamId");
+
+    if (view === "details" && dreamId) {
+      setCurrentView("details");
+      setSelectedDream(dreamId);
+    } else if (view === "journal") {
+      setCurrentView("journal");
+      setSelectedDream("");
+    } else {
+      setCurrentView("landing");
+      setSelectedDream("");
     }
-  }, [currentView]);
+  }, [searchParams]);
 
   const renderView = () => {
     switch (currentView) {
@@ -149,7 +167,7 @@ export default function Home() {
         return (
           <DreamCapture
             onSave={handleSaveDream}
-            onBack={() => setCurrentView("journal")}
+            onBack={() => router.push(`${pathname}?view=journal`)}
             isSaving={isCreatingDream}
           />
         );
@@ -158,7 +176,7 @@ export default function Home() {
           <DreamJournal
             dreams={dreams as DreamListResponse[]}
             onNewDream={() => setCurrentView("capture")}
-            onBack={() => setCurrentView("landing")}
+            onBack={() => router.push(`${pathname}?view=landing`)}
             onSelectDream={handleSelectDream}
             isLoading={loadingAllDreams}
           />
@@ -166,7 +184,7 @@ export default function Home() {
       case "insights":
         return (
           <InsightsDashboard
-            onBack={() => setCurrentView("journal")}
+            onBack={() => router.push(`${pathname}?view=journal`)}
             dreamCount={Array.isArray(dreams) ? dreams.length : 0}
           />
         );
@@ -174,7 +192,7 @@ export default function Home() {
         return selectedDream ? (
           <DreamDetails
             dream={dream as DreamResponse}
-            onBack={() => setCurrentView("journal")}
+            onBack={() => router.push(`${pathname}?view=journal`)}
             isLoading={loadingDream}
             onDelete={handleDeleteDream}
           />

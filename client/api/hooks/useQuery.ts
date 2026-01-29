@@ -21,7 +21,7 @@ export const useDream = (
   dreamId: string,
 ) => {
   return useQuery<ApiResponse<DreamAnalysis>>({
-    queryKey: ["single-journal"],
+    queryKey: ["single-journal", dreamId],
     queryFn: () => getDreamById(dreamId),
     enabled: !!dreamId,
     staleTime: 10 * 60 * 1000,

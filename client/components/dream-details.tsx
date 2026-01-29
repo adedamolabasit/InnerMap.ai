@@ -36,17 +36,18 @@ interface DreamDetailsProps {
   dream: Dream;
   onBack: () => void;
   isLoading?: boolean;
-  onDelete: (id: string) => void
+  onDelete: (id: string) => void;
 }
 
 export function DreamDetails({
   dream,
   onBack,
   isLoading = false,
-  onDelete
+  onDelete,
 }: DreamDetailsProps) {
   const [activeTab, setActiveTab] = useState("dream");
-  const [selectedAnalysis, setSelectedAnalysis] = useState<string | null>();
+const [selectedAnalysis, setSelectedAnalysis] = useState<string | null>(null);
+
 
   const getAgencyColor = (percentage: number) => {
     if (percentage < 30) return "text-red-500 bg-red-500/10";
@@ -54,7 +55,7 @@ export function DreamDetails({
     return "text-green-500 bg-green-500/10";
   };
 
-  if (isLoading) {
+  if (isLoading || !dream) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-center min-h-[400px]">
@@ -69,21 +70,47 @@ export function DreamDetails({
     );
   }
 
-  const wordCount = dream.dreamText.split(/\s+/).filter(Boolean).length;
-  const agencyPercentage = Math.round(dream.intake.agency * 100);
+  const safeDream = {
+  dreamText: dream?.dreamText ?? "",
+  intake: {
+    symbols: dream?.intake?.symbols ?? [],
+    characters: dream?.intake?.characters ?? [],
+    emotions: dream?.intake?.emotions ?? [],
+    actions: dream?.intake?.actions ?? [],
+    repeated_elements: dream?.intake?.repeated_elements ?? [],
+    agency: dream?.intake?.agency ?? 0,
+  },
+  reflection: {
+    themes: dream?.reflection?.themes ?? [],
+    insights: dream?.reflection?.insights ?? "",
+    suggested_action_hint: dream?.reflection?.suggested_action_hint ?? "",
+  },
+  action: {
+    type: dream?.action?.type ?? "Reflection",
+    content: dream?.action?.content ?? "",
+    duration: dream?.action?.duration,
+    agenticHooks: dream?.action?.agenticHooks ?? [],
+  },
+};
+
+  const wordCount =  safeDream.dreamText
+  .trim()
+  .split(/\s+/)
+  .filter(Boolean).length;
+  const agencyPercentage = Math.round(safeDream.intake.agency * 100);
 
   // Analysis cards data
   const analysisCards = [
     {
       id: "symbols",
       title: "Symbols",
-      count: dream.intake.symbols.length,
+      count: safeDream.intake?.symbols?.length,
       icon: "M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z",
       summary: "Key symbols and imagery from your dream",
       details: (
         <>
           <div className="flex flex-wrap gap-2">
-            {dream.intake.symbols.map((symbol, index) => (
+            {safeDream.intake.symbols.map((symbol, index) => (
               <Badge key={index} variant="secondary" className="text-sm">
                 {symbol}
               </Badge>
@@ -100,13 +127,13 @@ export function DreamDetails({
     {
       id: "characters",
       title: "Characters",
-      count: dream.intake.characters.length,
+      count: safeDream.intake.characters.length,
       icon: "M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5 1.197v-1a6 6 0 00-9-5.197M9 21v-1a6 6 0 0112 0v1z",
       summary: "People and entities in your dream",
       details: (
         <>
           <div className="space-y-2">
-            {dream.intake.characters.map((character, index) => (
+            {safeDream.intake.characters.map((character, index) => (
               <div
                 key={index}
                 className="flex items-center gap-2 text-sm p-2 hover:bg-muted/50 rounded-lg"
@@ -127,13 +154,13 @@ export function DreamDetails({
     {
       id: "emotions",
       title: "Emotions",
-      count: dream.intake.emotions.length,
+      count: safeDream.intake.emotions.length,
       icon: "M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
       summary: "Emotional tones experienced",
       details: (
         <>
           <div className="flex flex-wrap gap-2">
-            {dream.intake.emotions.map((emotion, index) => (
+            {safeDream.intake.emotions.map((emotion, index) => (
               <Badge
                 key={index}
                 variant="outline"
@@ -154,13 +181,13 @@ export function DreamDetails({
     {
       id: "themes",
       title: "Themes",
-      count: dream.reflection.themes.length,
+      count: safeDream.reflection.themes.length,
       icon: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z",
       summary: "Major themes identified",
       details: (
         <>
           <div className="space-y-3">
-            {dream.reflection.themes.map((theme, index) => (
+            {safeDream.reflection.themes.map((theme, index) => (
               <div
                 key={index}
                 className="p-3 bg-primary/5 rounded-lg border border-primary/10"
@@ -179,13 +206,13 @@ export function DreamDetails({
     {
       id: "actions",
       title: "Actions",
-      count: dream.intake.actions.length,
+      count: safeDream.intake.actions.length,
       icon: "M13 10V3L4 14h7v7l9-11h-7z",
       summary: "Notable actions and behaviors",
       details: (
         <>
           <div className="space-y-3">
-            {dream.intake.actions.map((action, index) => (
+            {safeDream.intake.actions.map((action, index) => (
               <div
                 key={index}
                 className="text-sm text-foreground pl-4 border-l-2 border-primary/30 py-2"
@@ -205,13 +232,13 @@ export function DreamDetails({
     {
       id: "repetitions",
       title: "Repeated Elements",
-      count: dream.intake.repeated_elements.length,
+      count: safeDream.intake.repeated_elements.length,
       icon: "M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15",
       summary: "Patterns and recurring elements",
       details: (
         <>
           <div className="space-y-3">
-            {dream.intake.repeated_elements.map((element, index) => (
+            {safeDream.intake.repeated_elements.map((element, index) => (
               <div
                 key={index}
                 className="flex items-center justify-between p-2 hover:bg-muted/50 rounded-lg"
@@ -275,7 +302,7 @@ export function DreamDetails({
               if (
                 window.confirm("Are you sure you want to delete this dream?")
               ) {
-                onDelete(dream._id)
+                onDelete(dream._id);
                 onBack();
               }
             }}
@@ -358,7 +385,7 @@ export function DreamDetails({
                           d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
                         />
                       </svg>
-                      User {dream.userId}
+                      User {dream?.userId}
                     </div>
                   </div>
                 </div>
@@ -541,7 +568,7 @@ export function DreamDetails({
                       <div className="prose prose-invert max-w-none">
                         <div className="p-6 bg-muted/20 rounded-lg border border-border">
                           <p className="text-base sm:text-lg leading-relaxed text-foreground whitespace-pre-wrap">
-                            {dream.dreamText}
+                            {safeDream.dreamText}
                           </p>
                         </div>
                       </div>
@@ -582,7 +609,7 @@ export function DreamDetails({
                       <div className="space-y-4">
                         <div className="p-4 bg-background/50 rounded-lg border border-border">
                           <p className="text-sm sm:text-base text-foreground leading-relaxed">
-                            {dream.reflection.insights}
+                            {safeDream.reflection.insights}
                           </p>
                         </div>
 
@@ -591,7 +618,7 @@ export function DreamDetails({
                             Suggested Reflection
                           </h4>
                           <p className="text-sm text-muted-foreground">
-                            {dream.reflection.suggested_action_hint}
+                            {safeDream.reflection.suggested_action_hint}
                           </p>
                         </div>
                       </div>
@@ -635,9 +662,9 @@ export function DreamDetails({
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <h3 className="font-semibold text-foreground">
-                          {dream.action.type}
+                          {safeDream.action.type}
                         </h3>
-                        {dream.action.duration && (
+                        {safeDream.action.duration && (
                           <Badge
                             variant="outline"
                             className="flex items-center gap-1"
@@ -655,39 +682,42 @@ export function DreamDetails({
                                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                               />
                             </svg>
-                            {dream.action.duration}
+                            {safeDream.action.duration}
                           </Badge>
                         )}
                       </div>
 
                       <div className="p-4 bg-background/50 rounded-lg">
                         <p className="text-sm sm:text-base text-foreground leading-relaxed">
-                          {dream.action.content}
+                          {safeDream.action.content}
                         </p>
                       </div>
 
-                      {dream.action.agenticHooks && dream.action.agenticHooks.length > 0 && (
-                        <div className="space-y-3">
-                          <h4 className="text-sm font-semibold text-foreground">
-                            Actionable Steps:
-                          </h4>
-                          <div className="space-y-2">
-                            {dream.action.agenticHooks.map((hook, index) => (
-                              <div
-                                key={index}
-                                className="flex items-start gap-3 p-3 bg-background/30 rounded-lg border border-border/50 hover:bg-background/50 transition-colors"
-                              >
-                                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-                                  <span className="text-xs font-semibold text-primary">
-                                    {index + 1}
-                                  </span>
+                      {safeDream.action.agenticHooks &&
+                        safeDream.action.agenticHooks.length > 0 && (
+                          <div className="space-y-3">
+                            <h4 className="text-sm font-semibold text-foreground">
+                              Actionable Steps:
+                            </h4>
+                            <div className="space-y-2">
+                              {safeDream.action.agenticHooks.map((hook, index) => (
+                                <div
+                                  key={index}
+                                  className="flex items-start gap-3 p-3 bg-background/30 rounded-lg border border-border/50 hover:bg-background/50 transition-colors"
+                                >
+                                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                                    <span className="text-xs font-semibold text-primary">
+                                      {index + 1}
+                                    </span>
+                                  </div>
+                                  <p className="text-sm text-foreground">
+                                    {hook}
+                                  </p>
                                 </div>
-                                <p className="text-sm text-foreground">{hook}</p>
-                              </div>
-                            ))}
+                              ))}
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
 
                       <Button className="w-full bg-primary hover:bg-primary/90 mt-4">
                         <svg
@@ -734,7 +764,8 @@ export function DreamDetails({
                           />
                         </svg>
                         <span className="text-sm text-muted-foreground">
-                          Find a quiet, comfortable space where you won't be disturbed
+                          Find a quiet, comfortable space where you won't be
+                          disturbed
                         </span>
                       </div>
                       <div className="flex items-start gap-2 p-3 bg-muted/20 rounded-lg">
