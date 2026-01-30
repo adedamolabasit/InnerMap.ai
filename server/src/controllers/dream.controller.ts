@@ -15,37 +15,43 @@ export const submitDream = async (req: Request, res: Response) => {
 
     const previousActionCompleted = lastDream?.action?.completed ?? false;
 
-    const intake = await analyzeDreamIntake(dreamText);
+    // const intake = await analyzeDreamIntake(dreamText);
 
-    const reflection = await analyzeReflection(dreamText);
+    // const reflection = await analyzeReflection(dreamText);
 
-    const action = await analyzeAction(
-      reflection.themes,
-      intake.agency,
-      previousActionCompleted,
-    );
+    // const action = await analyzeAction(
+    //   reflection.themes,
+    //   intake.agency,
+    //   previousActionCompleted,
+    // );
 
-    const hookResults = await executeAgenticHooks(action.agenticHooks, {
+    const hookResults = await executeAgenticHooks(["todo:add"], {
       userId,
-      content: action.content,
-      duration: action.duration,
+      content: "w",
+      duration: "p",
     });
+    // const hookResults = await executeAgenticHooks(action.agenticHooks, {
+    //   userId,
+    //   content: action.content,
+    //   duration: action.duration,
+    // });
 
-    const storedAction: StoredAction = {
-      ...action,
-      hookResults,
-      completed: false,
-    };
+    // const storedAction: StoredAction = {
+    //   ...action,
+    //   hookResults,
+    //   completed: false,
+    // };
 
-    const dreamEntry = await Dream.create({
-      userId,
-      dreamText,
-      intake,
-      reflection,
-      action: storedAction,
-    });
+    // const dreamEntry = await Dream.create({
+    //   userId,
+    //   dreamText,
+    //   intake,
+    //   reflection,
+    //   action: storedAction,
+    // });
 
-    res.json(dreamEntry);
+    // res.json(dreamEntry);
+    
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to process dream" });

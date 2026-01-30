@@ -14,6 +14,7 @@ import { useCreateDream } from "@/api/hooks/useMutate";
 import { useDeleteDream } from "@/api/hooks/useMutate";
 import { DreamResponse } from "@/api/types";
 import { useToast } from "@/hooks/use-toast";
+import { getOrCreateVisitorId } from "./layout";
 
 interface Dream {
   id: string;
@@ -37,14 +38,13 @@ export default function Home() {
 
   const { toast } = useToast();
 
-  const params = new URLSearchParams(searchParams.toString());
   const {
     data: dreams = [],
     isLoading: loadingAllDreams,
     isError: dreamsError,
     error: dreamsErrorDetails,
     refetch,
-  } = useUserDreams("iiei");
+  } = useUserDreams(getOrCreateVisitorId() as string);
 
   const {
     data: dream = {},
@@ -77,7 +77,7 @@ export default function Home() {
     createDream(
       {
         dreamText: content,
-        userId: "iiei",
+        userId: getOrCreateVisitorId() as string,
       },
       {
         onSuccess: () => {
