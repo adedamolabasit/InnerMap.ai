@@ -1,9 +1,10 @@
 import { HookResult } from "../models/types";
-import { addTodoToNotion, getDatabaseId } from "../agents/tools/notion";
+import { addTodoToNotion } from "../agents/tools/notion";
+import { createTodoistTask, createTodoistTaskForUser } from "../agents/tools/notion";
 
 export const executeAgenticHooks = async (
   hooks: string[],
-  payload: { userId: string; content: string; duration?: string },
+  payload: { userId: any; content: string; duration?: string },
 ) => {
   const results: HookResult[] = [];
 
@@ -24,18 +25,24 @@ export const executeAgenticHooks = async (
       case "todo:add":
         // getDatabaseId();
 
-        await addTodoToNotion({
-          name: "Finish AI project",
-          description: "Complete the frontend and backend integration",
-          dueDate: "2026-01-30",
-          assignedTo: "adam@example.com",
-          status: "Pending",
+        await  createTodoistTaskForUser ({
+          content: "Urgent from InnerMap>>>",
+          dueString: "today at 7pm",
+          priority: 3,
         });
-        results.push({
-          hook,
-          status: "todo_created",
-          executedAt: new Date(),
-        });
+
+        // await addTodoToNotion({
+        //   name: "Finish AI project",
+        //   description: "Complete the frontend and backend integration",
+        //   dueDate: "2026-01-30",
+        //   assignedTo: "adam@example.com",
+        //   status: "Pending",
+        // });
+        // results.push({
+        //   hook,
+        //   status: "todo_created",
+        //   executedAt: new Date(),
+        // });
         break;
       case "doc:write":
         results.push({ hook, status: "doc_created", executedAt: new Date() });

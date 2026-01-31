@@ -5,7 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { API_BASE_URL } from "@/api/config";
+import { getOrCreateVisitorId } from "@/api/config";
+import { Calendar, Bell, CheckSquare, FileText, Notebook } from "lucide-react";
 
+type AgenticHook =
+  | "calendar:add"
+  | "reminder:set"
+  | "todo:add"
+  | "doc:write"
+  | "notion:add";
 interface Dream {
   _id: string;
   userId: string;
@@ -46,9 +55,47 @@ export function DreamDetails({
   onDelete,
 }: DreamDetailsProps) {
   const [activeTab, setActiveTab] = useState("dream");
-const [selectedAnalysis, setSelectedAnalysis] = useState<string | null>(null);
+  const [selectedAnalysis, setSelectedAnalysis] = useState<string | null>(null);
 
+  const connectTodoist = () => {
+    // This hits your Express backend
+    window.location.href = `${API_BASE_URL}/auth/todoist/${dream._id}/${getOrCreateVisitorId()}`;
+  };
 
+  const hookUIMap: Record<
+    AgenticHook,
+    {
+      label: string;
+      icon: React.ReactNode;
+      onClick: () => void;
+    }
+  > = {
+    "todo:add": {
+      label: "Add Todoist",
+      icon: <CheckSquare className="w-4 h-4" />,
+      onClick: connectTodoist,
+    },
+    "calendar:add": {
+      label: "Connect Calendar",
+      icon: <Calendar className="w-4 h-4" />,
+      onClick: connectTodoist,
+    },
+    "reminder:set": {
+      label: "Enable Reminders",
+      icon: <Bell className="w-4 h-4" />,
+      onClick: connectTodoist,
+    },
+    "doc:write": {
+      label: "Create Document",
+      icon: <FileText className="w-4 h-4" />,
+      onClick: connectTodoist,
+    },
+    "notion:add": {
+      label: "Connect Notion",
+      icon: <Notebook className="w-4 h-4" />,
+      onClick: connectTodoist,
+    },
+  };
   const getAgencyColor = (percentage: number) => {
     if (percentage < 30) return "text-red-500 bg-red-500/10";
     if (percentage < 60) return "text-yellow-500 bg-yellow-500/10";
@@ -71,32 +118,32 @@ const [selectedAnalysis, setSelectedAnalysis] = useState<string | null>(null);
   }
 
   const safeDream = {
-  dreamText: dream?.dreamText ?? "",
-  intake: {
-    symbols: dream?.intake?.symbols ?? [],
-    characters: dream?.intake?.characters ?? [],
-    emotions: dream?.intake?.emotions ?? [],
-    actions: dream?.intake?.actions ?? [],
-    repeated_elements: dream?.intake?.repeated_elements ?? [],
-    agency: dream?.intake?.agency ?? 0,
-  },
-  reflection: {
-    themes: dream?.reflection?.themes ?? [],
-    insights: dream?.reflection?.insights ?? "",
-    suggested_action_hint: dream?.reflection?.suggested_action_hint ?? "",
-  },
-  action: {
-    type: dream?.action?.type ?? "Reflection",
-    content: dream?.action?.content ?? "",
-    duration: dream?.action?.duration,
-    agenticHooks: dream?.action?.agenticHooks ?? [],
-  },
-};
+    dreamText: dream?.dreamText ?? "",
+    intake: {
+      symbols: dream?.intake?.symbols ?? [],
+      characters: dream?.intake?.characters ?? [],
+      emotions: dream?.intake?.emotions ?? [],
+      actions: dream?.intake?.actions ?? [],
+      repeated_elements: dream?.intake?.repeated_elements ?? [],
+      agency: dream?.intake?.agency ?? 0,
+    },
+    reflection: {
+      themes: dream?.reflection?.themes ?? [],
+      insights: dream?.reflection?.insights ?? "",
+      suggested_action_hint: dream?.reflection?.suggested_action_hint ?? "",
+    },
+    action: {
+      type: dream?.action?.type ?? "Reflection",
+      content: dream?.action?.content ?? "",
+      duration: dream?.action?.duration,
+      agenticHooks: dream?.action?.agenticHooks ?? [],
+    },
+  };
 
-  const wordCount =  safeDream.dreamText
-  .trim()
-  .split(/\s+/)
-  .filter(Boolean).length;
+  const wordCount = safeDream.dreamText
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean).length;
   const agencyPercentage = Math.round(safeDream.intake.agency * 100);
 
   // Analysis cards data
@@ -700,21 +747,41 @@ const [selectedAnalysis, setSelectedAnalysis] = useState<string | null>(null);
                               Actionable Steps:
                             </h4>
                             <div className="space-y-2">
-                              {safeDream.action.agenticHooks.map((hook, index) => (
-                                <div
-                                  key={index}
-                                  className="flex items-start gap-3 p-3 bg-background/30 rounded-lg border border-border/50 hover:bg-background/50 transition-colors"
-                                >
-                                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-                                    <span className="text-xs font-semibold text-primary">
-                                      {index + 1}
-                                    </span>
-                                  </div>
-                                  <p className="text-sm text-foreground">
-                                    {hook}
-                                  </p>
-                                </div>
-                              ))}
+                              {safeDream.action.agenticHooks.map(
+                                (hook, index) => {
+                                  const action = hookUIMap[hook as AgenticHook];
+
+                                  return (
+                                    <div
+                                      key={index}
+                                      className="flex items-center gap-3 p-3 bg-background/30 rounded-lg border border-border/50 hover:bg-background/50 transition-colors"
+                                    >
+                                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                                        <span className="text-xs font-semibold text-primary">
+                                          {index + 1}
+                                        </span>
+                                      </div>
+
+                                      <div className="flex-1 space-y-2">
+                                        {/* <p className="text-sm text-foreground">
+                                          {hook}
+                                        </p> */}
+
+                                        {action && (
+                                          <button
+                                            onClick={action.onClick}
+                                            className="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-md
+                             bg-primary text-primary-foreground hover:bg-primary/90 transition cursor-pointer"
+                                          >
+                                            {action.icon}
+                                            {action.label}
+                                          </button>
+                                        )}
+                                      </div>
+                                    </div>
+                                  );
+                                },
+                              )}
                             </div>
                           </div>
                         )}

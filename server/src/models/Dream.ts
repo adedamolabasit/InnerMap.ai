@@ -1,17 +1,19 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document, Types } from "mongoose";
 import {
   DreamIntakeResult,
   ReflectionResult,
   ActionAgentResult,
 } from "../agents/types";
+import { StoredAction } from "./types";
 
 export interface DreamDocument extends Document {
-  userId: string;
+  userId: Types.ObjectId;
   dreamText: string;
   intake: DreamIntakeResult;
   reflection: ReflectionResult;
-  action: ActionAgentResult;
+  action: StoredAction;
   createdAt: Date;
+  todoistAccessToken: string;
 }
 
 const ActionSchema = new mongoose.Schema({
@@ -37,14 +39,18 @@ const ActionSchema = new mongoose.Schema({
   completedAt: Date,
 });
 
-
 const DreamSchema = new Schema<DreamDocument>({
-  userId: { type: String, required: true },
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
   dreamText: { type: String, required: true },
   intake: { type: Object, required: true },
   reflection: { type: Object, required: true },
   action: ActionSchema,
   createdAt: { type: Date, default: Date.now },
+  todoistAccessToken: { type: String, required: false },
 });
 
 export default mongoose.model<DreamDocument>("Dream", DreamSchema);

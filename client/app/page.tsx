@@ -103,8 +103,6 @@ export default function Home() {
   };
 
   const handleDeleteDream = (dreamId: string) => {
-    console.log(dreamId, "dreamId>>>>>>>>");
-
     deleteDream(dreamId, {
       onSuccess: () => {
         toast({

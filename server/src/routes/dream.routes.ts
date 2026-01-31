@@ -4,7 +4,9 @@ import {
   completeAction,
   getUserDreams,
   getDreamById,
-  deleteDream
+  deleteDream,
+  authTodoist,
+  authTodoisCallback,
 } from "../controllers/dream.controller";
 
 const router = Router();
@@ -22,5 +24,8 @@ router.get("/dreams/:userId", getUserDreams);
 router.get("/dream/:dreamId", getDreamById);
 
 router.delete("/dream/:dreamId", deleteDream); // <-- new delete route
+
+router.get("/auth/todoist/:dreamId/:userId", authTodoist); // <-- new delete route
+router.get("/auth/todoist/callback", authTodoisCallback); // <-- new delete route
 
 export default router;
