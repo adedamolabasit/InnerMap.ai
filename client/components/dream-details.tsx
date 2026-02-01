@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Calendar, Bell, CheckSquare, FileText, Notebook } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -28,7 +28,7 @@ export function DreamDetails({
   const [selectedAnalysis, setSelectedAnalysis] = useState<string | null>(null);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [dreamToDelete, setDreamToDelete] = useState<string | null>(null);
-  const [analysisCards, setAnalysisCards] = useState<DreamInsightCard[]>([]);
+  // const [analysisCards, setAnalysisCards] = useState<DreamInsightCard[]>([]);
 
   const { mutate: start } = useStartReflection();
   const { isTodoistConnected } = useProfileConnection(profile);
@@ -110,6 +110,42 @@ export function DreamDetails({
     return "text-green-500 bg-green-500/10";
   };
 
+  const safeDream: SafeDreamParams = useMemo(() => {
+    return {
+      dreamText: dream?.dreamText ?? "",
+      intake: {
+        symbols: dream?.intake?.symbols ?? [],
+        characters: dream?.intake?.characters ?? [],
+        emotions: dream?.intake?.emotions ?? [],
+        actions: dream?.intake?.actions ?? [],
+        repeated_elements: dream?.intake?.repeated_elements ?? [],
+        agency: dream?.intake?.agency ?? 0,
+      },
+      reflection: {
+        themes: dream?.reflection?.themes ?? [],
+        insights: dream?.reflection?.insights ?? "",
+        suggested_action_hint: dream?.reflection?.suggested_action_hint ?? "",
+      },
+      action: {
+        type: dream?.action?.type,
+        content: dream?.action?.content ?? "",
+        duration: dream?.action?.duration,
+        agenticHooks: dream?.action?.agenticHooks ?? [],
+        id: dream?.action?._id,
+      },
+    };
+  }, [dream]);
+
+  const wordCount = safeDream.dreamText
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean).length;
+  const agencyPercentage = Math.round(safeDream.intake.agency * 100);
+
+  const analysisCards = useMemo(() => {
+    return infoCards(safeDream);
+  }, [safeDream]);
+
   if (isLoading || !dream) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -124,42 +160,6 @@ export function DreamDetails({
       </div>
     );
   }
-
-  const safeDream: SafeDreamParams = {
-    dreamText: dream?.dreamText ?? "",
-    intake: {
-      symbols: dream?.intake?.symbols ?? [],
-      characters: dream?.intake?.characters ?? [],
-      emotions: dream?.intake?.emotions ?? [],
-      actions: dream?.intake?.actions ?? [],
-      repeated_elements: dream?.intake?.repeated_elements ?? [],
-      agency: dream?.intake?.agency ?? 0,
-    },
-    reflection: {
-      themes: dream?.reflection?.themes ?? [],
-      insights: dream?.reflection?.insights ?? "",
-      suggested_action_hint: dream?.reflection?.suggested_action_hint ?? "",
-    },
-    action: {
-      type: dream?.action?.type,
-      content: dream?.action?.content ?? "",
-      duration: dream?.action?.duration,
-      agenticHooks: dream?.action?.agenticHooks ?? [],
-      id: dream?.action?._id,
-    },
-  };
-
-  const wordCount = safeDream.dreamText
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean).length;
-  const agencyPercentage = Math.round(safeDream.intake.agency * 100);
-
-  useEffect(() => {
-    if (safeDream) {
-      setAnalysisCards(infoCards(safeDream));
-    }
-  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">

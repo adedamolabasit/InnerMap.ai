@@ -15,7 +15,7 @@ export const useDeleteDream = () => {
 };
 
 export const useStartReflection = () => {
-  return useMutation<ApiResponse<any>, Error, any>({
+  return useMutation<ApiResponse<{url: string}>, Error, any>({
     mutationFn: (actionId: string) => startReflection(actionId),
   });
 };

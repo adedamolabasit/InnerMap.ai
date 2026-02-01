@@ -44,7 +44,7 @@ export const getProfile = async (): Promise<
 
 export const startReflection = async (
   actionId: string,
-): Promise<ApiResponse<any>> => {
+): Promise<ApiResponse<{url: string}>> => {
   return apiClient<ApiResponse<any>>(`/start-reflection`, {
     method: "POST",
     body: JSON.stringify(actionId),

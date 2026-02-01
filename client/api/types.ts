@@ -71,7 +71,7 @@ export interface UserProfileResponse {
   updatedAt?: string;
 }
 
-export type SafeDreamParams = {
+export interface SafeDreamParams {
   dreamText: string;
 
   intake: {
@@ -96,9 +96,9 @@ export type SafeDreamParams = {
     agenticHooks: string[];
     id?: string;
   };
-};
+}
 
-export type DreamInsightCard = {
+export interface DreamInsightCard {
   id:
     | "symbols"
     | "characters"
@@ -112,4 +112,36 @@ export type DreamInsightCard = {
   icon: string;
   summary: string;
   details: ReactNode;
-};
+}
+
+export type AgenticHook =
+  | "calendar:add"
+  | "reminder:set"
+  | "todo:add"
+  | "doc:write"
+  | "notion:add";
+
+export interface DreamDetailsProps {
+  dream: DreamResponse;
+  profile: UserProfileResponse;
+  onBack: () => void;
+  isLoading?: boolean;
+  onDelete: (id: string) => void;
+}
+
+export interface Dream {
+  id: string;
+  title: string;
+  content: string;
+  date: string;
+  mood?: string;
+}
+
+export interface DreamJournalProps {
+  dreams: DreamListResponse[];
+  onNewDream: () => void;
+  onBack: () => void;
+  onSelectDream: (dream: string) => void;
+  isLoading?: boolean;
+  error?: Error | null;
+}

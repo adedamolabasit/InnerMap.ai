@@ -1,4 +1,5 @@
 import { todoistAI } from "../Todoist.agent";
+import { resolveDueString } from "../../utils";
 
 /**
  * Add a Todoist task with subtasks for a user action
@@ -22,7 +23,7 @@ export async function addTodoistTask(token: string, action: any) {
     body: JSON.stringify({
       content: mainTask.content,
       description: mainTask.description,
-      due_string: action.duration || "today",
+      due_string: resolveDueString(action.duration || "today"),
       due_lang: "en",
     }),
   });
@@ -49,7 +50,7 @@ export async function addTodoistTask(token: string, action: any) {
       body: JSON.stringify({
         content: sub,
         parent_id: createdMain.id,
-        due_string: action.duration || "today",
+        due_string: resolveDueString(action.duration || "today"),
         due_lang: "en",
       }),
     });
