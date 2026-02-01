@@ -47,7 +47,6 @@ export function getOrCreateVisitorId(): string | null {
   return id;
 }
 
-
 export default function RootLayout({
   children,
 }: Readonly<{

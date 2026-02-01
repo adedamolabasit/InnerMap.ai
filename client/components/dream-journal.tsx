@@ -3,24 +3,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { DreamListResponse } from "@/api/types";
+import { DreamJournalProps } from "@/api/types";
 
-interface Dream {
-  id: string;
-  title: string;
-  content: string;
-  date: string;
-  mood?: string;
-}
 
-interface DreamJournalProps {
-  dreams: DreamListResponse[];
-  onNewDream: () => void;
-  onBack: () => void;
-  onSelectDream: (dream: string) => void;
-  isLoading?: boolean;
-  error?: Error | null;
-}
 
 export function DreamJournal({
   dreams,
@@ -33,7 +18,6 @@ export function DreamJournal({
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<"date" | "title">("date");
 
-  // Filter & sort dreams
   const filteredDreams = dreams
     .filter((dream) =>
       dream.content.toLowerCase().includes(searchTerm.toLowerCase())
@@ -45,7 +29,6 @@ export function DreamJournal({
       return 0;
     });
 
-  // Loading state
   if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -59,7 +42,6 @@ export function DreamJournal({
     );
   }
 
-  // Error state
   if (error) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -73,7 +55,6 @@ export function DreamJournal({
     );
   }
 
-  // Empty state
   if (!filteredDreams.length) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -91,11 +72,9 @@ export function DreamJournal({
     );
   }
 
-  // Happy path: render filtered & sorted dreams
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
       <div className="max-w-5xl mx-auto px-6 py-8">
-        {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="space-y-2">
             <h1 className="text-3xl font-bold text-foreground">Your Dream Journal</h1>
@@ -113,7 +92,6 @@ export function DreamJournal({
           </div>
         </div>
 
-        {/* Search & Sort */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <input
             type="text"
@@ -132,7 +110,6 @@ export function DreamJournal({
           </select>
         </div>
 
-        {/* Dreams List */}
         <div className="grid grid-cols-1 gap-4">
           {filteredDreams.map((dream) => (
             <Card

@@ -36,7 +36,7 @@ export const apiClient = async <T>(
     const response = await fetch(url, config);
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
+      await response.json().catch(() => ({}));
     }
 
     return await response.json();

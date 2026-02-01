@@ -1,32 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Calendar, Bell, CheckSquare, FileText, Notebook } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { API_BASE_URL } from "@/api/config";
-import { getOrCreateVisitorId } from "@/api/config";
-import { Calendar, Bell, CheckSquare, FileText, Notebook } from "lucide-react";
+import { ConfirmModal } from "./confirm-modal";
+import { DreamInsightCard } from "@/api/types";
+
+import { API_BASE_URL, getOrCreateVisitorId } from "@/api/config";
 import { useProfileConnection } from "@/hooks/useProfileConnection";
-import { UserProfileResponse } from "@/api/types";
 import { useStartReflection } from "@/api/hooks/useMutate";
-import { DreamResponse } from "@/api/types";
+import { DreamDetailsProps, AgenticHook, SafeDreamParams } from "@/api/types";
 
-type AgenticHook =
-  | "calendar:add"
-  | "reminder:set"
-  | "todo:add"
-  | "doc:write"
-  | "notion:add";
-
-interface DreamDetailsProps {
-  dream: DreamResponse;
-  profile: UserProfileResponse;
-  onBack: () => void;
-  isLoading?: boolean;
-  onDelete: (id: string) => void;
-}
+import { infoCards } from "@/config";
 
 export function DreamDetails({
   dream,
@@ -37,8 +26,12 @@ export function DreamDetails({
 }: DreamDetailsProps) {
   const [activeTab, setActiveTab] = useState("dream");
   const [selectedAnalysis, setSelectedAnalysis] = useState<string | null>(null);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [dreamToDelete, setDreamToDelete] = useState<string | null>(null);
+  const [analysisCards, setAnalysisCards] = useState<DreamInsightCard[]>([]);
 
-  const { mutate: start, isPending: isDeleting } = useStartReflection();
+  const { mutate: start } = useStartReflection();
+  const { isTodoistConnected } = useProfileConnection(profile);
 
   const connectTodoist = () => {
     window.location.href = `${API_BASE_URL}/auth/todoist/${dream._id}/${getOrCreateVisitorId()}`;
@@ -53,19 +46,29 @@ export function DreamDetails({
       {
         onSuccess: (data: any) => {
           if (data.url && newTab) {
-            newTab.location.href = data.url; // Redirect the tab to the real URL
+            newTab.location.href = data.url;
           }
         },
         onError: (error: any) => {
           console.log(error, error);
-          if (newTab) newTab.close(); // Close tab on error
+          if (newTab) newTab.close();
         },
       },
     );
   };
 
-  const { isTodoistConnected } = useProfileConnection(profile);
-  console.log(isTodoistConnected, "connection");
+  const handleOpenDeleteModal = (dreamId: string) => {
+    setDreamToDelete(dreamId);
+    setConfirmDeleteOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!dreamToDelete) return;
+    onDelete(dreamToDelete);
+    setConfirmDeleteOpen(false);
+    setDreamToDelete(null);
+  };
+
   const hookUIMap: Record<
     AgenticHook,
     {
@@ -75,9 +78,7 @@ export function DreamDetails({
     }
   > = {
     "todo:add": {
-      label: isTodoistConnected
-        ? "Connected to  toTodoist"
-        : "Connect to Todist",
+      label: isTodoistConnected ? "Connected to Todoist" : "Connect to Todoist",
       icon: <CheckSquare className="w-4 h-4" />,
       onClick: connectTodoist,
     },
@@ -102,6 +103,7 @@ export function DreamDetails({
       onClick: connectTodoist,
     },
   };
+
   const getAgencyColor = (percentage: number) => {
     if (percentage < 30) return "text-red-500 bg-red-500/10";
     if (percentage < 60) return "text-yellow-500 bg-yellow-500/10";
@@ -123,7 +125,7 @@ export function DreamDetails({
     );
   }
 
-  const safeDream = {
+  const safeDream: SafeDreamParams = {
     dreamText: dream?.dreamText ?? "",
     intake: {
       symbols: dream?.intake?.symbols ?? [],
@@ -139,7 +141,7 @@ export function DreamDetails({
       suggested_action_hint: dream?.reflection?.suggested_action_hint ?? "",
     },
     action: {
-      type: dream?.action?.type ?? "Reflection",
+      type: dream?.action?.type,
       content: dream?.action?.content ?? "",
       duration: dream?.action?.duration,
       agenticHooks: dream?.action?.agenticHooks ?? [],
@@ -153,186 +155,15 @@ export function DreamDetails({
     .filter(Boolean).length;
   const agencyPercentage = Math.round(safeDream.intake.agency * 100);
 
-  // Analysis cards data
-  const analysisCards = [
-    {
-      id: "symbols",
-      title: "Symbols",
-      count: safeDream.intake?.symbols?.length,
-      icon: "M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z",
-      summary: "Key symbols and imagery from your dream",
-      details: (
-        <>
-          <div className="flex flex-wrap gap-2">
-            {safeDream.intake.symbols.map((symbol, index) => (
-              <Badge key={index} variant="secondary" className="text-sm">
-                {symbol}
-              </Badge>
-            ))}
-          </div>
-          <p className="text-sm text-muted-foreground mt-3">
-            Symbols represent significant objects, places, or concepts in your
-            dream. They often carry metaphorical meaning related to your
-            subconscious thoughts.
-          </p>
-        </>
-      ),
-    },
-    {
-      id: "characters",
-      title: "Characters",
-      count: safeDream.intake.characters.length,
-      icon: "M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5 1.197v-1a6 6 0 00-9-5.197M9 21v-1a6 6 0 0112 0v1z",
-      summary: "People and entities in your dream",
-      details: (
-        <>
-          <div className="space-y-2">
-            {safeDream.intake.characters.map((character, index) => (
-              <div
-                key={index}
-                className="flex items-center gap-2 text-sm p-2 hover:bg-muted/50 rounded-lg"
-              >
-                <div className="w-2 h-2 rounded-full bg-primary" />
-                <span className="text-foreground">{character}</span>
-              </div>
-            ))}
-          </div>
-          <p className="text-sm text-muted-foreground mt-3">
-            Characters in dreams often represent aspects of yourself or
-            significant people in your life. They can symbolize different
-            emotions, traits, or relationships.
-          </p>
-        </>
-      ),
-    },
-    {
-      id: "emotions",
-      title: "Emotions",
-      count: safeDream.intake.emotions.length,
-      icon: "M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
-      summary: "Emotional tones experienced",
-      details: (
-        <>
-          <div className="flex flex-wrap gap-2">
-            {safeDream.intake.emotions.map((emotion, index) => (
-              <Badge
-                key={index}
-                variant="outline"
-                className="bg-secondary/20 text-secondary-foreground border-secondary/30 text-sm"
-              >
-                {emotion}
-              </Badge>
-            ))}
-          </div>
-          <p className="text-sm text-muted-foreground mt-3">
-            Emotions in dreams reflect your subconscious feelings about
-            situations in your waking life. Strong or recurring emotions often
-            point to areas needing attention.
-          </p>
-        </>
-      ),
-    },
-    {
-      id: "themes",
-      title: "Themes",
-      count: safeDream.reflection.themes.length,
-      icon: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z",
-      summary: "Major themes identified",
-      details: (
-        <>
-          <div className="space-y-3">
-            {safeDream.reflection.themes.map((theme, index) => (
-              <div
-                key={index}
-                className="p-3 bg-primary/5 rounded-lg border border-primary/10"
-              >
-                <p className="text-sm font-medium text-foreground">{theme}</p>
-              </div>
-            ))}
-          </div>
-          <p className="text-sm text-muted-foreground mt-3">
-            Themes represent the core patterns and messages in your dream. They
-            provide insight into recurring issues or significant life themes.
-          </p>
-        </>
-      ),
-    },
-    {
-      id: "actions",
-      title: "Actions",
-      count: safeDream.intake.actions.length,
-      icon: "M13 10V3L4 14h7v7l9-11h-7z",
-      summary: "Notable actions and behaviors",
-      details: (
-        <>
-          <div className="space-y-3">
-            {safeDream.intake.actions.map((action, index) => (
-              <div
-                key={index}
-                className="text-sm text-foreground pl-4 border-l-2 border-primary/30 py-2"
-              >
-                {action}
-              </div>
-            ))}
-          </div>
-          <p className="text-sm text-muted-foreground mt-3">
-            Actions in dreams reveal how you're responding to situations and
-            your level of agency. They can indicate active or passive approaches
-            to life challenges.
-          </p>
-        </>
-      ),
-    },
-    {
-      id: "repetitions",
-      title: "Repeated Elements",
-      count: safeDream.intake.repeated_elements.length,
-      icon: "M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15",
-      summary: "Patterns and recurring elements",
-      details: (
-        <>
-          <div className="space-y-3">
-            {safeDream.intake.repeated_elements.map((element, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between p-2 hover:bg-muted/50 rounded-lg"
-              >
-                <div className="flex items-center gap-3">
-                  <svg
-                    className="w-4 h-4 text-muted-foreground"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      // d={Card}
-                    />
-                  </svg>
-                  <span className="text-sm text-foreground">{element}</span>
-                </div>
-                <Badge variant="outline" className="text-xs">
-                  Recurring
-                </Badge>
-              </div>
-            ))}
-          </div>
-          <p className="text-sm text-muted-foreground mt-3">
-            Repeated elements highlight patterns that are particularly
-            significant in your subconscious. These often point to unresolved
-            issues or deeply ingrained habits.
-          </p>
-        </>
-      ),
-    },
-  ];
+  useEffect(() => {
+    if (safeDream) {
+      setAnalysisCards(infoCards(safeDream));
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
-        {/* Header */}
         <div className="flex items-center justify-between mb-6 sm:mb-8">
           <Button variant="ghost" onClick={onBack} className="gap-2">
             <svg
@@ -352,14 +183,7 @@ export function DreamDetails({
           </Button>
           <Button
             variant="outline"
-            onClick={() => {
-              if (
-                window.confirm("Are you sure you want to delete this dream?")
-              ) {
-                onDelete(dream._id);
-                onBack();
-              }
-            }}
+            onClick={() => handleOpenDeleteModal(dream._id)}
             className="text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/20"
           >
             <svg
@@ -379,12 +203,9 @@ export function DreamDetails({
           </Button>
         </div>
 
-        {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column - Stats and Analysis Cards */}
           <div className="lg:col-span-1">
             <div className="space-y-6">
-              {/* Dream Info Card */}
               <Card className="p-6 border-border bg-card">
                 <div className="space-y-4">
                   <div>
@@ -445,7 +266,6 @@ export function DreamDetails({
                 </div>
               </Card>
 
-              {/* Analysis Cards Grid */}
               <div className="grid grid-cols-2 gap-4">
                 {analysisCards.map((card) => (
                   <button
@@ -497,7 +317,6 @@ export function DreamDetails({
                 ))}
               </div>
 
-              {/* Selected Analysis Details Panel */}
               {selectedAnalysis && (
                 <Card className="border-primary/30 bg-primary/5 animate-in slide-in-from-bottom-2 duration-200">
                   <div className="p-6">
@@ -561,7 +380,6 @@ export function DreamDetails({
             </div>
           </div>
 
-          {/* Right Column - Main Content Tabs */}
           <div className="lg:col-span-2 space-y-6">
             <Card className="border-border bg-card overflow-hidden">
               <Tabs
@@ -612,7 +430,6 @@ export function DreamDetails({
                   </TabsList>
                 </div>
 
-                {/* Dream Text Tab */}
                 <TabsContent value="dream" className="p-0 m-0">
                   <div className="p-6">
                     <div className="space-y-4">
@@ -630,7 +447,6 @@ export function DreamDetails({
                   </div>
                 </TabsContent>
 
-                {/* Insights Tab */}
                 <TabsContent value="insights" className="p-0 m-0">
                   <div className="p-6">
                     <div className="space-y-6">
@@ -682,7 +498,7 @@ export function DreamDetails({
               </Tabs>
             </Card>
 
-            {/* Practice Section - Now placed under the card */}
+            {/* Practice Section */}
             <Card className="border-border bg-card overflow-hidden">
               <div className="p-6">
                 <div className="space-y-6">
@@ -770,10 +586,6 @@ export function DreamDetails({
                                       </div>
 
                                       <div className="flex-1 space-y-2">
-                                        {/* <p className="text-sm text-foreground">
-                                          {hook}
-                                        </p> */}
-
                                         {action && (
                                           <button
                                             onClick={action.onClick}
@@ -796,7 +608,7 @@ export function DreamDetails({
                       {isTodoistConnected && (
                         <Button
                           onClick={() =>
-                            handleStartReflection(safeDream.action.id)
+                            handleStartReflection(safeDream.action.id as string)
                           }
                           className="w-full bg-primary hover:bg-primary/90 mt-4"
                         >
@@ -911,6 +723,13 @@ export function DreamDetails({
           </div>
         </div>
       </div>
+      <ConfirmModal
+        open={confirmDeleteOpen}
+        onClose={() => setConfirmDeleteOpen(false)}
+        title="Delete Dream?"
+        description="Are you sure you want to delete this dream? This action cannot be undone."
+        onConfirm={handleConfirmDelete}
+      />
     </div>
   );
 }

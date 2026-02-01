@@ -2,28 +2,18 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
+
 import { LandingPage } from "@/components/landing-page";
 import { DreamCapture } from "@/components/dream-capture";
 import { DreamJournal } from "@/components/dream-journal";
 import { InsightsDashboard } from "@/components/insights-dashboard";
 import { DreamDetails } from "@/components/dream-details";
-import { useUserDreams } from "@/api/hooks/useQuery";
-import { useDream } from "@/api/hooks/useQuery";
-import { DreamListResponse, UserProfileResponse } from "@/api/types";
-import { useCreateDream } from "@/api/hooks/useMutate";
-import { useDeleteDream } from "@/api/hooks/useMutate";
-import { useProfile } from "@/api/hooks/useQuery";
-import { DreamResponse } from "@/api/types";
-import { useToast } from "@/hooks/use-toast";
-import { getOrCreateVisitorId } from "./layout";
 
-interface Dream {
-  id: string;
-  title: string;
-  content: string;
-  date: string;
-  mood?: string;
-}
+import { useUserDreams, useDream, useProfile } from "@/api/hooks/useQuery";
+import { useCreateDream, useDeleteDream } from "@/api/hooks/useMutate";
+import { DreamListResponse, DreamResponse, UserProfileResponse } from "@/api/types";
+import { getOrCreateVisitorId } from "@/api/config";
+import { useToast } from "@/hooks/use-toast";
 
 type View = "landing" | "capture" | "journal" | "insights" | "details";
 
@@ -31,13 +21,13 @@ export default function Home() {
   const [currentView, setCurrentView] = useState<View>("landing");
   const [selectedDream, setSelectedDream] = useState<string>("");
   const [isInitialLoading, setIsInitialLoading] = useState(true);
-  const searchParams = useSearchParams();
+
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const { toast } = useToast();
 
   const dreamIdFromUrl = searchParams.get("dreamId");
-
-  const { toast } = useToast();
 
   const {
     data: dreams = [],
@@ -53,6 +43,10 @@ export default function Home() {
     isError: dreamError,
     error: dreamErrorDetails,
   } = useDream(dreamIdFromUrl as string);
+
+  const { data: profile } = useProfile();
+  const { mutate: createDream, isPending: isCreatingDream } = useCreateDream();
+  const { mutate: deleteDream, isPending: isDeleting } = useDeleteDream();
 
   useEffect(() => {
     if (currentView === "landing") {
@@ -70,13 +64,21 @@ export default function Home() {
     }
   }, [loadingAllDreams, currentView]);
 
-  const { mutate: createDream, isPending: isCreatingDream } = useCreateDream();
+  useEffect(() => {
+    const view = searchParams.get("view") as View | null;
+    const dreamId = searchParams.get("dreamId");
 
-  const { mutate: deleteDream, isPending: isDeleting } = useDeleteDream();
-
-  const { data: profile } = useProfile();
-
-  console.log(profile, "lll")
+    if (view === "details" && dreamId) {
+      setCurrentView("details");
+      setSelectedDream(dreamId);
+    } else if (view === "journal") {
+      setCurrentView("journal");
+      setSelectedDream("");
+    } else {
+      setCurrentView("landing");
+      setSelectedDream("");
+    }
+  }, [searchParams]);
 
   const handleSaveDream = (content: string) => {
     createDream(
@@ -119,7 +121,6 @@ export default function Home() {
         setCurrentView("journal");
         refetch();
       },
-
       onError: (error) => {
         toast({
           title: "Delete failed",
@@ -129,8 +130,6 @@ export default function Home() {
               : "Could not delete the dream. Please try again.",
           variant: "destructive",
         });
-
-        console.error("Dream delete failed ❌", error);
       },
     });
   };
@@ -138,29 +137,6 @@ export default function Home() {
   const handleSelectDream = (dreamId: string) => {
     router.push(`${pathname}?view=details&dreamId=${dreamId}`);
   };
-
-  // useEffect(() => {
-  //   if (currentView) {
-  //     params.set("view", currentView);
-  //     router.push(`${pathname}?${params.toString()}`);
-  //   }
-  // }, [currentView]);
-
-  useEffect(() => {
-    const view = searchParams.get("view") as View | null;
-    const dreamId = searchParams.get("dreamId");
-
-    if (view === "details" && dreamId) {
-      setCurrentView("details");
-      setSelectedDream(dreamId);
-    } else if (view === "journal") {
-      setCurrentView("journal");
-      setSelectedDream("");
-    } else {
-      setCurrentView("landing");
-      setSelectedDream("");
-    }
-  }, [searchParams]);
 
   const renderView = () => {
     switch (currentView) {
@@ -211,7 +187,6 @@ export default function Home() {
       <main className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mb-4"></div>
-
           <h2 className="text-xl font-semibold text-foreground mb-2">
             Loading your dreams...
           </h2>
@@ -255,16 +230,14 @@ export default function Home() {
 
       {renderView()}
 
-      {currentView !== "landing" && (
+      {currentView !== "landing" && currentView === "journal" && (
         <div className="fixed bottom-6 right-6 flex gap-2 z-40">
-          {currentView === "journal" && (
-            <button
-              onClick={() => setCurrentView("insights")}
-              className="px-4 py-3 rounded-full bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 transition-opacity shadow-lg"
-            >
-              Insights
-            </button>
-          )}
+          <button
+            onClick={() => setCurrentView("insights")}
+            className="px-4 py-3 rounded-full bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 transition-opacity shadow-lg"
+          >
+            Insights
+          </button>
         </div>
       )}
     </main>

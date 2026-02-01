@@ -136,7 +136,6 @@ export function DreamCapture({ onSave, onBack, isSaving }: DreamCaptureProps) {
               )}
             </Card>
 
-            {/* Text Input */}
             <Card className="p-6 border-border bg-card space-y-4">
               <label className="block text-sm font-medium text-foreground">
                 Dream Description

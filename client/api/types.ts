@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 export interface DreamAnalysis {
   id: string;
   userId: string;
@@ -68,3 +70,46 @@ export interface UserProfileResponse {
   createdAt?: string;
   updatedAt?: string;
 }
+
+export type SafeDreamParams = {
+  dreamText: string;
+
+  intake: {
+    symbols: string[];
+    characters: string[];
+    emotions: string[];
+    actions: string[];
+    repeated_elements: string[];
+    agency: number;
+  };
+
+  reflection: {
+    themes: string[];
+    insights: string;
+    suggested_action_hint: string;
+  };
+
+  action: {
+    type: string;
+    content: string;
+    duration?: string;
+    agenticHooks: string[];
+    id?: string;
+  };
+};
+
+export type DreamInsightCard = {
+  id:
+    | "symbols"
+    | "characters"
+    | "emotions"
+    | "actions"
+    | "patterns"
+    | "themes"
+    | "repetitions";
+  title: string;
+  count: number;
+  icon: string;
+  summary: string;
+  details: ReactNode;
+};

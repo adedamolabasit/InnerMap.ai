@@ -1,5 +1,5 @@
-import { useQuery, UseQueryOptions } from "@tanstack/react-query";
-import { getUserDreams, getDreamById, getProfile} from "..";
+import { useQuery } from "@tanstack/react-query";
+import { getUserDreams, getDreamById, getProfile } from "..";
 
 import {
   DreamAnalysis,
@@ -36,4 +36,3 @@ export const useProfile = () => {
     staleTime: 10 * 60 * 1000,
   });
 };
-

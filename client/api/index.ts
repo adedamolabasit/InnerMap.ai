@@ -42,7 +42,9 @@ export const getProfile = async (): Promise<
   return apiClient<ApiResponse<UserProfileResponse>>(`/profile`);
 };
 
-export const startReflection = async (actionId: string): Promise<ApiResponse<any>>  => {
+export const startReflection = async (
+  actionId: string,
+): Promise<ApiResponse<any>> => {
   return apiClient<ApiResponse<any>>(`/start-reflection`, {
     method: "POST",
     body: JSON.stringify(actionId),
