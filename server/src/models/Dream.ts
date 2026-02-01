@@ -12,6 +12,7 @@ export interface DreamDocument extends Document {
   intake: DreamIntakeResult;
   reflection: ReflectionResult;
   action: StoredAction;
+  todoisUrl: string;
   createdAt: Date;
   todoistAccessToken: string;
 }
@@ -45,6 +46,7 @@ const DreamSchema = new Schema<DreamDocument>({
     ref: "User",
     required: true,
   },
+  todoisUrl: { type: String, required: false },
   dreamText: { type: String, required: true },
   intake: { type: Object, required: true },
   reflection: { type: Object, required: true },

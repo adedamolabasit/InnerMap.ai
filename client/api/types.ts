@@ -32,7 +32,6 @@ export interface DreamListResponse {
   mood?: string;
 }
 
-
 export interface DreamResponse {
   _id: string;
   userId: string;
@@ -55,6 +54,17 @@ export interface DreamResponse {
     content: string;
     duration?: string;
     agenticHooks: string[];
+    _id: string;
   };
   createdAt: string;
+}
+
+export interface UserProfileResponse {
+  _id?: string;
+  visitorId?: string;
+  todoistAccessToken?: string;
+  todoistTokenExpiry?: string;
+  todoistConnectedAt?: Date;
+  createdAt?: string;
+  updatedAt?: string;
 }

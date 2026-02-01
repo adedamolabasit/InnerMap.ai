@@ -6,7 +6,8 @@ export interface DreamIntakeResult {
   emotions: string[];
   actions: string[];
   repeated_elements: string[];
-  agency: number; // 0 (low control) -> 1 (high control)
+  agency: number;
+  todoisUrl: string;
 }
 
 export interface ReflectionResult {

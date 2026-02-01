@@ -8,6 +8,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { API_BASE_URL } from "@/api/config";
 import { getOrCreateVisitorId } from "@/api/config";
 import { Calendar, Bell, CheckSquare, FileText, Notebook } from "lucide-react";
+import { useProfileConnection } from "@/hooks/useProfileConnection";
+import { UserProfileResponse } from "@/api/types";
+import { useStartReflection } from "@/api/hooks/useMutate";
+import { DreamResponse } from "@/api/types";
 
 type AgenticHook =
   | "calendar:add"
@@ -15,34 +19,10 @@ type AgenticHook =
   | "todo:add"
   | "doc:write"
   | "notion:add";
-interface Dream {
-  _id: string;
-  userId: string;
-  dreamText: string;
-  intake: {
-    symbols: string[];
-    characters: string[];
-    emotions: string[];
-    actions: string[];
-    repeated_elements: string[];
-    agency: number;
-  };
-  reflection: {
-    themes: string[];
-    insights: string;
-    suggested_action_hint: string;
-  };
-  action: {
-    type: string;
-    content: string;
-    duration?: string;
-    agenticHooks: string[];
-  };
-  createdAt: string;
-}
 
 interface DreamDetailsProps {
-  dream: Dream;
+  dream: DreamResponse;
+  profile: UserProfileResponse;
   onBack: () => void;
   isLoading?: boolean;
   onDelete: (id: string) => void;
@@ -50,6 +30,7 @@ interface DreamDetailsProps {
 
 export function DreamDetails({
   dream,
+  profile,
   onBack,
   isLoading = false,
   onDelete,
@@ -57,11 +38,34 @@ export function DreamDetails({
   const [activeTab, setActiveTab] = useState("dream");
   const [selectedAnalysis, setSelectedAnalysis] = useState<string | null>(null);
 
+  const { mutate: start, isPending: isDeleting } = useStartReflection();
+
   const connectTodoist = () => {
-    // This hits your Express backend
     window.location.href = `${API_BASE_URL}/auth/todoist/${dream._id}/${getOrCreateVisitorId()}`;
   };
 
+  const handleStartReflection = (actionId: string) => {
+    const newTab = window.open("about:blank", "_blank");
+    start(
+      {
+        actionId,
+      },
+      {
+        onSuccess: (data: any) => {
+          if (data.url && newTab) {
+            newTab.location.href = data.url; // Redirect the tab to the real URL
+          }
+        },
+        onError: (error: any) => {
+          console.log(error, error);
+          if (newTab) newTab.close(); // Close tab on error
+        },
+      },
+    );
+  };
+
+  const { isTodoistConnected } = useProfileConnection(profile);
+  console.log(isTodoistConnected, "connection");
   const hookUIMap: Record<
     AgenticHook,
     {
@@ -71,7 +75,9 @@ export function DreamDetails({
     }
   > = {
     "todo:add": {
-      label: "Add Todoist",
+      label: isTodoistConnected
+        ? "Connected to  toTodoist"
+        : "Connect to Todist",
       icon: <CheckSquare className="w-4 h-4" />,
       onClick: connectTodoist,
     },
@@ -137,6 +143,7 @@ export function DreamDetails({
       content: dream?.action?.content ?? "",
       duration: dream?.action?.duration,
       agenticHooks: dream?.action?.agenticHooks ?? [],
+      id: dream?.action?._id,
     },
   };
 
@@ -786,28 +793,35 @@ export function DreamDetails({
                           </div>
                         )}
 
-                      <Button className="w-full bg-primary hover:bg-primary/90 mt-4">
-                        <svg
-                          className="w-4 h-4 mr-2"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
+                      {isTodoistConnected && (
+                        <Button
+                          onClick={() =>
+                            handleStartReflection(safeDream.action.id)
+                          }
+                          className="w-full bg-primary hover:bg-primary/90 mt-4"
                         >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
-                          />
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
-                        Start Reflection Practice
-                      </Button>
+                          <svg
+                            className="w-4 h-4 mr-2"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                            />
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+                          Start Reflection Practice
+                        </Button>
+                      )}
                     </div>
                   </div>
 

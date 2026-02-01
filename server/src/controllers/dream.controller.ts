@@ -8,6 +8,7 @@ import { StoredAction } from "../models/types";
 import axios from "axios";
 import { AuthenticatedRequest } from "../types/auth";
 import { User } from "../models/User";
+import { addTodoistTask } from "../agents/tools/todoist";
 
 // Update the function signature
 export const submitDream = async (req: AuthenticatedRequest, res: Response) => {
@@ -40,6 +41,8 @@ export const submitDream = async (req: AuthenticatedRequest, res: Response) => {
       content: action.content,
       duration: action.duration,
     });
+
+    console.log(action, "ew");
 
     const storedAction: StoredAction = {
       ...action,
@@ -119,6 +122,80 @@ export const getDreamById = async (req: Request, res: Response) => {
   }
 };
 
+export const getProfile = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    console.log(userId, "id");
+
+    const profile = await User.findById(userId).select(
+      "+todoistAccessToken +todoistTokenExpiry +todoistConnectedAt",
+    );
+
+    if (!profile) {
+      return res.status(404).json({ error: "Profile not found" });
+    }
+
+    return res.status(200).json(profile);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch profile" });
+  }
+};
+
+export const startReflection = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    const { actionId } = req.body;
+
+    const profile = await User.findById(userId).select(
+      "+todoistAccessToken +todoistTokenExpiry +todoistConnectedAt",
+    );
+
+    if (!profile) {
+      return res.status(404).json({ error: "Profile not found" });
+    }
+
+    const dream = await Dream.findOne({
+      userId,
+      "action._id": actionId,
+    });
+
+    if (!dream) {
+      return res.status(404).json({ error: "Dream/action not found" });
+    }
+
+    // Redirect if already has a Todoist URL
+    if (dream.todoisUrl) {
+      return res.status(200).json({ url: dream.todoisUrl });
+    }
+
+    // Create Todoist task
+    const todoist = await addTodoistTask(
+      profile.todoistAccessToken as string,
+      dream.action,
+    );
+
+    // Update the dream's action with the new URL
+
+    await Dream.updateOne(
+      {
+        userId,
+        "action._id": actionId,
+      },
+      {
+        $set: {
+          todoisUrl: todoist.url,
+        },
+      },
+    );
+
+    return res.status(200).json({ url: todoist.url });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Failed to fetch profile" });
+  }
+};
+
 export const deleteDream = async (req: Request, res: Response) => {
   try {
     const { dreamId } = req.params;
@@ -185,21 +262,18 @@ export const authTodoisCallback = async (req: Request, res: Response) => {
 
     const { access_token, expires_in } = response.data;
 
-    console.log("Todoist token received:", response);
-
     // ✅ state === userId (as you originally sent it)
 
     const result = await User.updateOne(
-      { visitorId: userId }, 
+      { visitorId: userId },
       {
         $set: {
           todoistAccessToken: access_token,
           todoistTokenExpiry: expires_in,
+          todoistConnectedAt: new Date(),
         },
       },
     );
-
-    console.log("Mongo update result:", result);
 
     res.redirect(`http://localhost:3000/?view=details&dreamId=${dreamId}`);
   } catch (err) {

@@ -7,6 +7,8 @@ import {
   deleteDream,
   authTodoist,
   authTodoisCallback,
+  getProfile,
+  startReflection
 } from "../controllers/dream.controller";
 
 const router = Router();
@@ -26,6 +28,11 @@ router.get("/dream/:dreamId", getDreamById);
 router.delete("/dream/:dreamId", deleteDream); // <-- new delete route
 
 router.get("/auth/todoist/:dreamId/:userId", authTodoist); // <-- new delete route
+
 router.get("/auth/todoist/callback", authTodoisCallback); // <-- new delete route
+
+router.get("/profile", getProfile);
+
+router.post("/start-reflection", startReflection);
 
 export default router;

@@ -11,4 +11,5 @@ export interface StoredAction extends ActionAgentResult {
   hookResults: HookResult[];
   completed: boolean;
   completedAt?: Date;
+  todoisUrl?: string
 }

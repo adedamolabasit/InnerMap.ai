@@ -1,11 +1,14 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
-import { getUserDreams, getDreamById } from "..";
+import { getUserDreams, getDreamById, getProfile} from "..";
 
-import { DreamAnalysis, DreamListResponse, ApiResponse } from "../types";
+import {
+  DreamAnalysis,
+  DreamListResponse,
+  ApiResponse,
+  UserProfileResponse,
+} from "../types";
 
-export const useUserDreams = (
-  userId: string,
-) => {
+export const useUserDreams = (userId: string) => {
   return useQuery<DreamListResponse[]>({
     queryKey: ["all-users-dream"],
     queryFn: () => getUserDreams(userId),
@@ -17,9 +20,7 @@ export const useUserDreams = (
   });
 };
 
-export const useDream = (
-  dreamId: string,
-) => {
+export const useDream = (dreamId: string) => {
   return useQuery<ApiResponse<DreamAnalysis>>({
     queryKey: ["single-journal", dreamId],
     queryFn: () => getDreamById(dreamId),
@@ -27,3 +28,12 @@ export const useDream = (
     staleTime: 10 * 60 * 1000,
   });
 };
+
+export const useProfile = () => {
+  return useQuery<ApiResponse<UserProfileResponse>>({
+    queryKey: ["profile"],
+    queryFn: () => getProfile(),
+    staleTime: 10 * 60 * 1000,
+  });
+};
+

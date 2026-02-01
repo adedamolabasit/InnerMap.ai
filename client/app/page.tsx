@@ -9,9 +9,10 @@ import { InsightsDashboard } from "@/components/insights-dashboard";
 import { DreamDetails } from "@/components/dream-details";
 import { useUserDreams } from "@/api/hooks/useQuery";
 import { useDream } from "@/api/hooks/useQuery";
-import { DreamListResponse } from "@/api/types";
+import { DreamListResponse, UserProfileResponse } from "@/api/types";
 import { useCreateDream } from "@/api/hooks/useMutate";
 import { useDeleteDream } from "@/api/hooks/useMutate";
+import { useProfile } from "@/api/hooks/useQuery";
 import { DreamResponse } from "@/api/types";
 import { useToast } from "@/hooks/use-toast";
 import { getOrCreateVisitorId } from "./layout";
@@ -72,6 +73,10 @@ export default function Home() {
   const { mutate: createDream, isPending: isCreatingDream } = useCreateDream();
 
   const { mutate: deleteDream, isPending: isDeleting } = useDeleteDream();
+
+  const { data: profile } = useProfile();
+
+  console.log(profile, "lll")
 
   const handleSaveDream = (content: string) => {
     createDream(
@@ -190,6 +195,7 @@ export default function Home() {
         return selectedDream ? (
           <DreamDetails
             dream={dream as DreamResponse}
+            profile={profile as UserProfileResponse}
             onBack={() => router.push(`${pathname}?view=journal`)}
             isLoading={loadingDream}
             onDelete={handleDeleteDream}
