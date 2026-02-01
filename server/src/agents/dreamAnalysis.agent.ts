@@ -38,7 +38,6 @@ ${dreamText}
     ],
   });
 
-  // Safe extraction
   const raw = response.output_text;
 
   try {

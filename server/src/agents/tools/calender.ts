@@ -1,6 +1,5 @@
 import { google } from "googleapis";
 
-// Helper to parse a duration string like "15 minutes" or "1 day"
 const parseDuration = (duration: string) => {
   if (duration.includes("minute")) {
     const minutes = parseInt(duration);
@@ -12,13 +11,13 @@ const parseDuration = (duration: string) => {
     const days = parseInt(duration);
     return days * 24 * 60 * 60 * 1000;
   }
-  return 15 * 60 * 1000; // default 15 min
+  return 15 * 60 * 1000;
 };
 
 export const addToCalendar = async (
   userToken: string,
   content: string,
-  duration?: string
+  duration?: string,
 ) => {
   const auth = new google.auth.OAuth2();
   auth.setCredentials({ access_token: userToken });

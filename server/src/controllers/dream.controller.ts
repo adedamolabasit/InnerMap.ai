@@ -5,15 +5,12 @@ import { analyzeAction } from "../agents/action.agent";
 import Dream from "../models/Dream";
 import { executeAgenticHooks } from "../services/agenticTools";
 import { StoredAction } from "../models/types";
-import axios from "axios";
 import { AuthenticatedRequest } from "../types/auth";
 import { User } from "../models/User";
 import { addTodoistTask } from "../agents/tools/todoist";
 
-// Update the function signature
 export const submitDream = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    // Now TypeScript knows req.user exists
     const userId = req.user?.id;
 
     if (!userId) {
@@ -36,13 +33,7 @@ export const submitDream = async (req: AuthenticatedRequest, res: Response) => {
       previousActionCompleted,
     );
 
-    const hookResults = await executeAgenticHooks(action.agenticHooks, {
-      userId,
-      content: action.content,
-      duration: action.duration,
-    });
-
-    console.log(action, "ew");
+    const hookResults = await executeAgenticHooks(action.agenticHooks);
 
     const storedAction: StoredAction = {
       ...action,
@@ -95,13 +86,11 @@ export const getUserDreams = async (req: Request, res: Response) => {
       content: dream.dreamText,
       date: dream.createdAt.toISOString(),
 
-      // Optional: derive mood from intake emotions
       mood: dream.intake?.emotions?.[0],
     }));
 
     res.json(response);
   } catch (err) {
-    console.error(err);
     res.status(500).json({ error: "Failed to fetch user dreams" });
   }
 };
@@ -117,28 +106,7 @@ export const getDreamById = async (req: Request, res: Response) => {
 
     res.json(dream);
   } catch (err) {
-    console.error(err);
     res.status(500).json({ error: "Failed to fetch dream" });
-  }
-};
-
-export const getProfile = async (req: Request, res: Response) => {
-  try {
-    const userId = req.user?.id;
-    console.log(userId, "id");
-
-    const profile = await User.findById(userId).select(
-      "+todoistAccessToken +todoistTokenExpiry +todoistConnectedAt",
-    );
-
-    if (!profile) {
-      return res.status(404).json({ error: "Profile not found" });
-    }
-
-    return res.status(200).json(profile);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to fetch profile" });
   }
 };
 
@@ -164,18 +132,14 @@ export const startReflection = async (req: Request, res: Response) => {
       return res.status(404).json({ error: "Dream/action not found" });
     }
 
-    // Redirect if already has a Todoist URL
     if (dream.todoisUrl) {
       return res.status(200).json({ url: dream.todoisUrl });
     }
 
-    // Create Todoist task
     const todoist = await addTodoistTask(
       profile.todoistAccessToken as string,
       dream.action,
     );
-
-    // Update the dream's action with the new URL
 
     await Dream.updateOne(
       {
@@ -191,7 +155,6 @@ export const startReflection = async (req: Request, res: Response) => {
 
     return res.status(200).json({ url: todoist.url });
   } catch (err) {
-    console.error(err);
     return res.status(500).json({ error: "Failed to fetch profile" });
   }
 };
@@ -209,75 +172,6 @@ export const deleteDream = async (req: Request, res: Response) => {
 
     res.json({ success: true, message: "Dream deleted successfully" });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ error: "Failed to delete dream" });
-  }
-};
-
-export const authTodoist = async (req: Request, res: Response) => {
-  try {
-    const { dreamId, userId } = req.params;
-
-    const statePayload = {
-      userId,
-      dreamId,
-    };
-
-    const state = Buffer.from(JSON.stringify(statePayload)).toString("base64");
-
-    const params = new URLSearchParams({
-      client_id: process.env.TODOIST_CLIENT_ID!,
-      scope: "data:read_write",
-      state: state,
-    });
-    res.redirect(`https://todoist.com/oauth/authorize?${params.toString()}`);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to delete dream" });
-  }
-};
-
-export const authTodoisCallback = async (req: Request, res: Response) => {
-  try {
-    const { code, state } = req.query;
-
-    if (!code || !state || typeof state !== "string") {
-      return res.status(400).json({ error: "Missing code or state" });
-    }
-
-    const decodedState = JSON.parse(
-      Buffer.from(state, "base64").toString("utf-8"),
-    );
-
-    const { userId, dreamId } = decodedState;
-
-    const response = await axios.post(
-      "https://todoist.com/oauth/access_token",
-      {
-        client_id: process.env.TODOIST_CLIENT_ID!,
-        client_secret: process.env.TODOIST_CLIENT_SECRET!,
-        code,
-      },
-    );
-
-    const { access_token, expires_in } = response.data;
-
-    // ✅ state === userId (as you originally sent it)
-
-    const result = await User.updateOne(
-      { visitorId: userId },
-      {
-        $set: {
-          todoistAccessToken: access_token,
-          todoistTokenExpiry: expires_in,
-          todoistConnectedAt: new Date(),
-        },
-      },
-    );
-
-    res.redirect(`http://localhost:3000/?view=details&dreamId=${dreamId}`);
-  } catch (err) {
-    console.error("Todoist OAuth error:", err);
-    res.status(500).json({ error: "Todoist auth failed" });
   }
 };

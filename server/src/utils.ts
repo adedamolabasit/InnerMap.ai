@@ -3,13 +3,13 @@ export const resolveDueString = (duration?: string): string => {
 
   const normalized = duration.toLowerCase().trim();
 
-  // Direct calendar keywords
   if (normalized.includes("today")) return "today";
   if (normalized.includes("tomorrow")) return "tomorrow";
   if (normalized.includes("week")) return "next week";
 
-  // Handle durations like "10 minutes", "2 hours"
-  const durationMatch = normalized.match(/(\d+)\s*(minute|minutes|hour|hours|day|days)/);
+  const durationMatch = normalized.match(
+    /(\d+)\s*(minute|minutes|hour|hours|day|days)/,
+  );
   if (durationMatch) {
     const amount = parseInt(durationMatch[1]);
     const unit = durationMatch[2];
@@ -31,10 +31,8 @@ export const resolveDueString = (duration?: string): string => {
         break;
     }
 
-    // Return ISO date string for Todoist
-    return now.toISOString().split("T")[0]; // YYYY-MM-DD
+    return now.toISOString().split("T")[0];
   }
 
-  // Fallback
   return "today";
 };

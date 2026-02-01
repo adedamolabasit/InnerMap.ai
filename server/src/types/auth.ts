@@ -1,4 +1,3 @@
-// src/types/authenticated-request.ts
 import { Request } from "express";
 import { Types } from "mongoose";
 

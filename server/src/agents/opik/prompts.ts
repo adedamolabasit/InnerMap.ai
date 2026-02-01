@@ -1,4 +1,3 @@
-// src/agents/opik/prompts.ts
 import { Opik } from "opik";
 
 export const GLOBAL_SYSTEM_PROMPT = `
@@ -13,7 +12,6 @@ Constraints:
 - All outputs must be structured JSON, concise, and emotionally respectful.
 `;
 
-// Instead of uploading, store the prompts locally
 export const PROMPTS = {
   dreamIntake: `
 ${GLOBAL_SYSTEM_PROMPT}
@@ -70,7 +68,6 @@ Return JSON only in this format:
   `,
 };
 
-// Optional: Initialize Opik for tracing
 export const opikClient = new Opik({
   apiKey: process.env.OPIK_API_KEY!,
 });

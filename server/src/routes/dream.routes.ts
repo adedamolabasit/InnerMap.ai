@@ -5,33 +5,20 @@ import {
   getUserDreams,
   getDreamById,
   deleteDream,
-  authTodoist,
-  authTodoisCallback,
-  getProfile,
-  startReflection
+  startReflection,
 } from "../controllers/dream.controller";
 
 const router = Router();
 
-// Create / process dream
 router.post("/dream", submitDream);
 
-// Mark action as completed
 router.post("/dream/complete", completeAction);
 
-// 🔹 Get all dreams for a user
 router.get("/dreams/:userId", getUserDreams);
 
-// 🔹 Get a single dream by id
 router.get("/dream/:dreamId", getDreamById);
 
-router.delete("/dream/:dreamId", deleteDream); // <-- new delete route
-
-router.get("/auth/todoist/:dreamId/:userId", authTodoist); // <-- new delete route
-
-router.get("/auth/todoist/callback", authTodoisCallback); // <-- new delete route
-
-router.get("/profile", getProfile);
+router.delete("/dream/:dreamId", deleteDream);
 
 router.post("/start-reflection", startReflection);
 

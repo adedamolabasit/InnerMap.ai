@@ -1,5 +1,3 @@
-// src/agents/types.ts
-
 export interface DreamIntakeResult {
   symbols: string[];
   characters: string[];

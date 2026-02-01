@@ -1,17 +1,6 @@
-import fetch from "node-fetch";
 import { openai } from "../services/openai.service";
 
-interface UserAction {
-  _id: string;
-  content: string;
-  duration?: string; // e.g., "today"
-}
-
-/**
- * AI-powered agent to generate main task description and subtasks
- */
 export async function todoistAI(actionContent: string) {
-  // 1️⃣ Generate main task description
   const mainTaskRes = await openai.responses.create({
     model: "gpt-4.1-mini",
     input: [
@@ -45,8 +34,6 @@ Task:
   } catch {
     throw new Error("Todoist AI returned invalid JSON for main task");
   }
-
-  // 2️⃣ Generate subtasks
   const subtasksRes = await openai.responses.create({
     model: "gpt-4.1-mini",
     input: [

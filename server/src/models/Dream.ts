@@ -2,7 +2,6 @@ import mongoose, { Schema, Document, Types } from "mongoose";
 import {
   DreamIntakeResult,
   ReflectionResult,
-  ActionAgentResult,
 } from "../agents/types";
 import { StoredAction } from "./types";
 

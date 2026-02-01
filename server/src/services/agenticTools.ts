@@ -1,9 +1,7 @@
 import { HookResult } from "../models/types";
-import { addTodoistTask } from "../agents/tools/todoist";
 
 export const executeAgenticHooks = async (
   hooks: string[],
-  payload: { userId: any; content: string; duration?: string },
 ) => {
   const results: HookResult[] = [];
 

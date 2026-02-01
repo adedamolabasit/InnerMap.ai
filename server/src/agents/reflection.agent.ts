@@ -1,4 +1,3 @@
-// src/agents/reflection.agent.ts
 import { openai } from "../services/openai.service";
 import { ReflectionResult } from "./types";
 
@@ -25,7 +24,6 @@ export const analyzeReflection = async (
     input: reflectionAgentPrompt(dreamText),
   });
 
-  // Extract JSON from output_text safely
   const match = response.output_text.match(/\{[\s\S]*\}/);
   if (!match) throw new Error("No JSON found in AI output");
 

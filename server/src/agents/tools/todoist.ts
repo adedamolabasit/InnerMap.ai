@@ -1,19 +1,11 @@
 import { todoistAI } from "../Todoist.agent";
 import { resolveDueString } from "../../utils";
 
-/**
- * Add a Todoist task with subtasks for a user action
- * @param token User's Todoist access token
- * @param action UserAction object
- */
-
 export async function addTodoistTask(token: string, action: any) {
   if (!token) throw new Error("User not connected to Todoist");
 
-  // 1️⃣ Generate AI-enriched main task and subtasks
   const { mainTask, subtasks } = await todoistAI(action.content);
 
-  // 2️⃣ Create main task in Todoist
   const mainRes = await fetch("https://api.todoist.com/rest/v2/tasks", {
     method: "POST",
     headers: {
@@ -36,10 +28,7 @@ export async function addTodoistTask(token: string, action: any) {
   }
 
   const createdMain = await mainRes.json();
-  console.log(createdMain, "main");
-  console.log("Main task created:", createdMain.id, createdMain.content);
 
-  // 3️⃣ Create subtasks under the main task
   for (const sub of subtasks) {
     const subRes = await fetch("https://api.todoist.com/rest/v2/tasks", {
       method: "POST",
@@ -60,9 +49,6 @@ export async function addTodoistTask(token: string, action: any) {
       console.error(`Failed to create subtask: ${text}`);
       continue;
     }
-
-    const subTask = await subRes.json();
-    console.log("Subtask created:", subTask.id, subTask.content);
   }
 
   return {

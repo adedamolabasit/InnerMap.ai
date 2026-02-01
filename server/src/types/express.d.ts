@@ -1,4 +1,3 @@
-// src/types/express.d.ts
 import { Types } from "mongoose";
 
 declare global {

@@ -1,13 +1,11 @@
-// src/middleware/identify-user.ts
 import { Response, NextFunction } from "express";
 import { User as UserModel } from "../models/User";
 import { AuthenticatedRequest } from "../types/auth";
-import mongoose from "mongoose";
 
 export async function identifyUser(
   req: AuthenticatedRequest,
-  res: Response,
-  next: NextFunction
+  _res: Response,
+  next: NextFunction,
 ) {
   try {
     const walletId = req.headers["user-id"] as string | undefined;
@@ -40,11 +38,11 @@ export async function identifyUser(
           createdAt: new Date(),
         },
       },
-      { upsert: true, new: true }
+      { upsert: true, new: true },
     );
 
     req.user = {
-      id: user._id, // ObjectId type
+      id: user._id,
       type: userType,
     };
 

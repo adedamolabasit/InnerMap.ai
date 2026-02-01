@@ -1,4 +1,3 @@
-// src/models/types.ts (or same file if you want)
 import { ActionAgentResult } from "../agents/types";
 
 export interface HookResult {
