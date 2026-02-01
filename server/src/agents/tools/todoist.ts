@@ -1,5 +1,5 @@
-import { todoistAI } from "../Todoist.agent";
 import { resolveDueString } from "../../utils";
+import { todoistAI } from "../todoist.agent";
 
 export async function addTodoistTask(token: string, action: any) {
   if (!token) throw new Error("User not connected to Todoist");
