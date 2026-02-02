@@ -11,7 +11,7 @@ import {
   ApiResponse,
   AudioTranscribeInput,
   AudioTranscribeResponse,
-} from "../types";
+} from "../../shared/types/types";
 
 export const useCreateDream = () => {
   return useMutation<ApiResponse<DreamAnalysis>, Error, CreateDreamDTO>({

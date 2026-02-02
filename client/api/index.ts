@@ -6,7 +6,7 @@ import {
   UserProfileResponse,
   AudioTranscribeInput,
   AudioTranscribeResponse,
-} from "./types";
+} from "../shared/types/types";
 import { apiClient } from "./config";
 
 export const createDreamAnalysis = async (
