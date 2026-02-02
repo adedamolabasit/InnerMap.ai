@@ -1,6 +1,17 @@
 import { useMutation } from "@tanstack/react-query";
-import { createDreamAnalysis, deleteDream, startReflection } from "..";
-import { CreateDreamDTO, DreamAnalysis, ApiResponse } from "../types";
+import {
+  createDreamAnalysis,
+  deleteDream,
+  startReflection,
+  audioTranscribe,
+} from "..";
+import {
+  CreateDreamDTO,
+  DreamAnalysis,
+  ApiResponse,
+  AudioTranscribeInput,
+  AudioTranscribeResponse,
+} from "../types";
 
 export const useCreateDream = () => {
   return useMutation<ApiResponse<DreamAnalysis>, Error, CreateDreamDTO>({
@@ -15,7 +26,17 @@ export const useDeleteDream = () => {
 };
 
 export const useStartReflection = () => {
-  return useMutation<ApiResponse<{url: string}>, Error, any>({
+  return useMutation<ApiResponse<{ url: string }>, Error, any>({
     mutationFn: (actionId: string) => startReflection(actionId),
+  });
+};
+
+export const useAudioTranscribe = () => {
+  return useMutation<
+    ApiResponse<AudioTranscribeResponse>,
+    Error,
+    AudioTranscribeInput
+  >({
+    mutationFn: audioTranscribe,
   });
 };

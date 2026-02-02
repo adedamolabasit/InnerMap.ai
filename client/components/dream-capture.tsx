@@ -10,32 +10,60 @@ interface DreamCaptureProps {
   isSaving?: boolean;
 }
 
+type SpeechRecognitionType = any;
+
 export function DreamCapture({ onSave, onBack, isSaving }: DreamCaptureProps) {
   const [dreamText, setDreamText] = useState("");
   const [title, setTitle] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [transcriptText, setTranscriptText] = useState("");
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+
+  const recognitionRef = useRef<SpeechRecognitionType | null>(null);
 
   const handleStartRecording = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
-      mediaRecorderRef.current = mediaRecorder;
+      const SpeechRecognition =
+        (window as any).SpeechRecognition ||
+        (window as any).webkitSpeechRecognition;
 
-      let audioChunks: BlobPart[] = [];
-      mediaRecorder.ondataavailable = (event) => {
-        audioChunks.push(event.data);
+      if (!SpeechRecognition) {
+        alert("Speech recognition not supported");
+        return;
+      }
+
+      const recognition = new SpeechRecognition();
+      recognitionRef.current = recognition;
+
+      recognition.continuous = true; 
+      recognition.interimResults = true; 
+      recognition.lang = "en-US";
+
+      recognition.onresult = (event: any) => {
+        let finalTranscript = "";
+
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            finalTranscript += transcript + " ";
+          }
+        }
+
+        if (finalTranscript) {
+          setTranscriptText((prev) => prev + finalTranscript); 
+          setDreamText((prev) => prev + finalTranscript); 
+        }
       };
 
-      mediaRecorder.onstop = () => {
-        const transcriptionDemo =
-          "I was walking through a forest... the trees were glowing... there was a path I needed to follow...";
-        setTranscriptText(transcriptionDemo);
-        setDreamText(transcriptionDemo);
+      recognition.onerror = () => {
+        recognition.stop();
+        setIsRecording(false); 
       };
 
-      mediaRecorder.start();
+      recognition.onend = () => {
+        setIsRecording(false); 
+      };
+
+      recognition.start();
       setIsRecording(true);
     } catch {
       alert("Microphone access denied");
@@ -43,15 +71,8 @@ export function DreamCapture({ onSave, onBack, isSaving }: DreamCaptureProps) {
   };
 
   const handleStopRecording = () => {
-    if (mediaRecorderRef.current) {
-      mediaRecorderRef.current.stop();
-      mediaRecorderRef.current.stream
-        .getTracks()
-        .forEach((track) => track.stop());
-      setIsRecording(false);
-    }
+    recognitionRef.current?.stop(); 
   };
-
   const handleSave = () => {
     if (!dreamText.trim()) {
       alert("Please write or record a dream first");
@@ -107,6 +128,7 @@ export function DreamCapture({ onSave, onBack, isSaving }: DreamCaptureProps) {
                   {isRecording ? "Recording..." : "Ready"}
                 </span>
               </div>
+
               <div className="flex gap-3">
                 {!isRecording ? (
                   <Button
@@ -126,10 +148,11 @@ export function DreamCapture({ onSave, onBack, isSaving }: DreamCaptureProps) {
                   </Button>
                 )}
               </div>
+
               {transcriptText && (
                 <div className="mt-4 p-4 bg-background rounded-lg border border-border">
                   <p className="text-sm text-muted-foreground mb-2">
-                    Transcribed:
+                    Recording Notes:
                   </p>
                   <p className="text-foreground">{transcriptText}</p>
                 </div>
@@ -141,12 +164,13 @@ export function DreamCapture({ onSave, onBack, isSaving }: DreamCaptureProps) {
                 Dream Description
               </label>
               <textarea
-                placeholder="Write down all the details you remember from your dream... the setting, people, colors, emotions, and any other vivid details."
+                placeholder="Write down all the details you remember from your dream..."
                 value={dreamText}
                 onChange={(e) => setDreamText(e.target.value)}
                 rows={10}
-                className="w-full px-4 py-3 rounded-lg border border-input bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-4 py-3 rounded-lg border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none"
               />
+
               <div className="flex gap-3">
                 <Button
                   variant="default"
@@ -154,15 +178,9 @@ export function DreamCapture({ onSave, onBack, isSaving }: DreamCaptureProps) {
                   disabled={isSaving}
                   className="flex-1"
                 >
-                  {isSaving ? (
-                    <>
-                      <span className="inline-block animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white mr-2"></span>
-                      Analyzing...
-                    </>
-                  ) : (
-                    "Save & Analyze"
-                  )}
+                  {isSaving ? "Analyzing..." : "Save & Analyze"}
                 </Button>
+
                 <Button
                   variant="outline"
                   onClick={onBack}
@@ -180,24 +198,10 @@ export function DreamCapture({ onSave, onBack, isSaving }: DreamCaptureProps) {
                 Tips for Better Recall
               </h3>
               <ul className="space-y-3 text-sm text-muted-foreground">
-                <li className="flex gap-3">
-                  <span className="text-primary">•</span>
-                  <span>Record immediately upon waking</span>
-                </li>
-                <li className="flex gap-3">
-                  <span className="text-primary">•</span>
-                  <span>
-                    Include sensory details (colors, textures, sounds)
-                  </span>
-                </li>
-                <li className="flex gap-3">
-                  <span className="text-primary">•</span>
-                  <span>Note your emotions and mood</span>
-                </li>
-                <li className="flex gap-3">
-                  <span className="text-primary">•</span>
-                  <span>Write in present tense as if happening now</span>
-                </li>
+                <li>• Record immediately upon waking</li>
+                <li>• Include sensory details</li>
+                <li>• Note emotions</li>
+                <li>• Speak naturally</li>
               </ul>
             </Card>
 

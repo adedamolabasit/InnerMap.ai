@@ -8,9 +8,9 @@ import { StoredAction } from "./types";
 export interface DreamDocument extends Document {
   userId: Types.ObjectId;
   dreamText: string;
-  intake: DreamIntakeResult;
-  reflection: ReflectionResult;
-  action: StoredAction;
+  intake?: DreamIntakeResult | null;
+  reflection?: ReflectionResult | null;
+  action?: StoredAction | null;
   todoisUrl: string;
   createdAt: Date;
   todoistAccessToken: string;
@@ -47,8 +47,8 @@ const DreamSchema = new Schema<DreamDocument>({
   },
   todoisUrl: { type: String, required: false },
   dreamText: { type: String, required: true },
-  intake: { type: Object, required: true },
-  reflection: { type: Object, required: true },
+  intake: { type: Object, required: false },
+  reflection: { type: Object, required: false },
   action: ActionSchema,
   createdAt: { type: Date, default: Date.now },
   todoistAccessToken: { type: String, required: false },

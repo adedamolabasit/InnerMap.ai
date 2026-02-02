@@ -4,6 +4,8 @@ import {
   ApiResponse,
   DreamListResponse,
   UserProfileResponse,
+  AudioTranscribeInput,
+  AudioTranscribeResponse,
 } from "./types";
 import { apiClient } from "./config";
 
@@ -19,7 +21,7 @@ export const createDreamAnalysis = async (
 export const getUserDreams = async (
   userId: string,
 ): Promise<DreamListResponse[]> => {
-  return apiClient<DreamListResponse[]>(`/dreams/${userId}`);
+  return apiClient<DreamListResponse[]>(`/dreams`);
 };
 
 export const getDreamById = async (
@@ -44,10 +46,22 @@ export const getProfile = async (): Promise<
 
 export const startReflection = async (
   actionId: string,
-): Promise<ApiResponse<{url: string}>> => {
+): Promise<ApiResponse<{ url: string }>> => {
   return apiClient<ApiResponse<any>>(`/start-reflection`, {
     method: "POST",
     body: JSON.stringify(actionId),
+  });
+};
+
+export const audioTranscribe = async (
+  input: AudioTranscribeInput,
+): Promise<ApiResponse<AudioTranscribeResponse>> => {
+  const formData = new FormData();
+  formData.append("file", input.audio);
+
+  return apiClient<ApiResponse<AudioTranscribeResponse>>("/audio-transcribe", {
+    method: "POST",
+    body: formData,
   });
 };
 
@@ -58,4 +72,5 @@ export const dreamService = {
   deleteDream,
   getProfile,
   startReflection,
+  audioTranscribe,
 };

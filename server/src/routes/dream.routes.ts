@@ -6,15 +6,18 @@ import {
   getDreamById,
   deleteDream,
   startReflection,
+  audioTranscribe,
 } from "../controllers/dream.controller";
 
 const router = Router();
+
+router.post("/audio-transcribe", audioTranscribe);
 
 router.post("/dream", submitDream);
 
 router.post("/dream/complete", completeAction);
 
-router.get("/dreams/:userId", getUserDreams);
+router.get("/dreams", getUserDreams);
 
 router.get("/dream/:dreamId", getDreamById);
 

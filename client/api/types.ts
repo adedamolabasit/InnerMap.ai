@@ -145,3 +145,11 @@ export interface DreamJournalProps {
   isLoading?: boolean;
   error?: Error | null;
 }
+
+export interface AudioTranscribeInput {
+  audio: Blob;
+}
+
+export interface AudioTranscribeResponse {
+  text: string;
+}

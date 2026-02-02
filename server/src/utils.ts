@@ -36,3 +36,13 @@ export const resolveDueString = (duration?: string): string => {
 
   return "today";
 };
+
+
+export const validateBody = (fields: string[], body: any) => {
+  for (const field of fields) {
+    if (!body[field] || body[field].toString().trim() === "") {
+      return `Missing required field: ${field}`;
+    }
+  }
+  return null;
+};

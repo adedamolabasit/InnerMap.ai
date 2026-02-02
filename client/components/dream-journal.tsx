@@ -83,10 +83,10 @@ export function DreamJournal({
             </p>
           </div>
           <div className="flex gap-3">
-            <Button variant="default" onClick={onNewDream} size="lg">
+            <Button variant="default" onClick={onNewDream} size="lg" className="cursor-pointer">
               + New Dream
             </Button>
-            <Button variant="ghost" onClick={onBack}>
+            <Button variant="ghost" onClick={onBack} className="cursor-pointer">
               Back
             </Button>
           </div>

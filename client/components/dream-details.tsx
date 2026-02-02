@@ -1,14 +1,12 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
-import { Calendar, Bell, CheckSquare, FileText, Notebook } from "lucide-react";
-
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ConfirmModal } from "./confirm-modal";
-import { DreamInsightCard } from "@/api/types";
+import { TodoistIcon } from "./ui/TodoistIcon";
 
 import { API_BASE_URL, getOrCreateVisitorId } from "@/api/config";
 import { useProfileConnection } from "@/hooks/useProfileConnection";
@@ -24,11 +22,10 @@ export function DreamDetails({
   isLoading = false,
   onDelete,
 }: DreamDetailsProps) {
-  const [activeTab, setActiveTab] = useState("dream");
+  const [activeTab, setActiveTab] = useState("insights");
   const [selectedAnalysis, setSelectedAnalysis] = useState<string | null>(null);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [dreamToDelete, setDreamToDelete] = useState<string | null>(null);
-  // const [analysisCards, setAnalysisCards] = useState<DreamInsightCard[]>([]);
 
   const { mutate: start } = useStartReflection();
   const { isTodoistConnected } = useProfileConnection(profile);
@@ -71,35 +68,31 @@ export function DreamDetails({
 
   const hookUIMap: Record<
     AgenticHook,
-    {
-      label: string;
-      icon: React.ReactNode;
-      onClick: () => void;
-    }
+    { label: string; icon: React.ReactNode; onClick: () => void }
   > = {
     "todo:add": {
       label: isTodoistConnected ? "Connected to Todoist" : "Connect to Todoist",
-      icon: <CheckSquare className="w-4 h-4" />,
+      icon: <TodoistIcon />,
       onClick: connectTodoist,
     },
     "calendar:add": {
       label: "Connect Calendar",
-      icon: <Calendar className="w-4 h-4" />,
+      icon: <TodoistIcon />,
       onClick: connectTodoist,
     },
     "reminder:set": {
       label: "Enable Reminders",
-      icon: <Bell className="w-4 h-4" />,
+      icon: <TodoistIcon />,
       onClick: connectTodoist,
     },
     "doc:write": {
       label: "Create Document",
-      icon: <FileText className="w-4 h-4" />,
+      icon: <TodoistIcon />,
       onClick: connectTodoist,
     },
     "notion:add": {
       label: "Connect Notion",
-      icon: <Notebook className="w-4 h-4" />,
+      icon: <TodoistIcon />,
       onClick: connectTodoist,
     },
   };
@@ -165,7 +158,11 @@ export function DreamDetails({
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         <div className="flex items-center justify-between mb-6 sm:mb-8">
-          <Button variant="ghost" onClick={onBack} className="gap-2">
+          <Button
+            variant="ghost"
+            onClick={onBack}
+            className="gap-2 cursor-pointer"
+          >
             <svg
               className="w-4 h-4"
               fill="none"
@@ -184,7 +181,7 @@ export function DreamDetails({
           <Button
             variant="outline"
             onClick={() => handleOpenDeleteModal(dream._id)}
-            className="text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/20"
+            className="text-destructive hover:text-destructive cursor-pointer hover:bg-destructive/10 border-destructive/20"
           >
             <svg
               className="w-4 h-4 mr-2"
@@ -275,7 +272,7 @@ export function DreamDetails({
                         selectedAnalysis === card.id ? null : card.id,
                       )
                     }
-                    className={`p-4 border rounded-lg transition-all duration-200 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary ${
+                    className={`p-4 border  cursor-pointer rounded-lg transition-all duration-200 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary ${
                       selectedAnalysis === card.id
                         ? "border-primary bg-primary/5 ring-2 ring-primary ring-opacity-50 shadow-md"
                         : "border-border bg-card hover:border-primary/50"
@@ -283,7 +280,7 @@ export function DreamDetails({
                   >
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 ">
                           <svg
                             className={`w-4 h-4 ${selectedAnalysis === card.id ? "text-primary" : "text-muted-foreground"}`}
                             fill="none"
@@ -388,29 +385,10 @@ export function DreamDetails({
                 className="w-full"
               >
                 <div className="border-b border-border">
-                  <TabsList className="w-full justify-start rounded-none bg-transparent p-0 h-auto overflow-x-auto">
-                    <TabsTrigger
-                      value="dream"
-                      className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent py-4 px-6 whitespace-nowrap"
-                    >
-                      <svg
-                        className="w-4 h-4 mr-2"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
-                        />
-                      </svg>
-                      Dream Text
-                    </TabsTrigger>
+                  <TabsList className="w-4/5 mx-4 justify-start rounded-none bg-transparent p-0 h-auto overflow-x-auto">
                     <TabsTrigger
                       value="insights"
-                      className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent py-4 px-6 whitespace-nowrap"
+                      className="rounded-lg border-b-2 border-transparent cursor-pointer data-[state=active]:border-primary data-[state=active]:bg-transparent py-4 px-6 whitespace-nowrap"
                     >
                       <svg
                         className="w-4 h-4 mr-2"
@@ -426,6 +404,25 @@ export function DreamDetails({
                         />
                       </svg>
                       Insights
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="dream"
+                      className="rounded-lg border-b-2 border-transparent cursor-pointer data-[state=active]:border-primary data-[state=active]:bg-transparent py-4 px-6 whitespace-nowrap"
+                    >
+                      <svg
+                        className="w-4 h-4 mr-2"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
+                        />
+                      </svg>
+                      Dream Narrative
                     </TabsTrigger>
                   </TabsList>
                 </div>
@@ -494,53 +491,133 @@ export function DreamDetails({
                       </div>
                     </div>
                   </div>
+
+                  {/* Practice Section */}
                 </TabsContent>
               </Tabs>
             </Card>
-
-            {/* Practice Section */}
-            <Card className="border-border bg-card overflow-hidden">
-              <div className="p-6">
-                <div className="space-y-6">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-full bg-primary/10">
-                      <svg
-                        className="w-6 h-6 text-primary"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                        />
-                      </svg>
+            {activeTab === "insights" && (
+              <Card className="border-border bg-card overflow-hidden">
+                <div className="p-6">
+                  <div className="space-y-6">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-full bg-primary/10">
+                        <svg
+                          className="w-6 h-6 text-primary"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                          />
+                        </svg>
+                      </div>
+                      <div>
+                        <h2 className="text-xl font-semibold text-foreground">
+                          Recommended Practice
+                        </h2>
+                        <p className="text-sm text-muted-foreground">
+                          Integrate insights from your dream into your daily
+                          life
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h2 className="text-xl font-semibold text-foreground">
-                        Recommended Practice
-                      </h2>
-                      <p className="text-sm text-muted-foreground">
-                        Integrate insights from your dream into your daily life
-                      </p>
-                    </div>
-                  </div>
 
-                  <div className="p-6 bg-gradient-to-r from-primary/10 to-accent/10 rounded-lg border border-border">
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-semibold text-foreground">
-                          {safeDream.action.type}
-                        </h3>
-                        {safeDream.action.duration && (
-                          <Badge
-                            variant="outline"
-                            className="flex items-center gap-1"
+                    <div className="p-6 bg-gradient-to-r from-primary/10 to-accent/10 rounded-lg border border-border">
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <h3 className="font-semibold text-foreground">
+                            {safeDream.action.type}
+                          </h3>
+                          {safeDream.action.duration && (
+                            <Badge
+                              variant="outline"
+                              className="flex items-center gap-1"
+                            >
+                              <svg
+                                className="w-3 h-3"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                />
+                              </svg>
+                              {safeDream.action.duration}
+                            </Badge>
+                          )}
+                        </div>
+
+                        <div className="p-4 bg-background/50 rounded-lg">
+                          <p className="text-sm sm:text-base text-foreground leading-relaxed">
+                            {safeDream.action.content}
+                          </p>
+                        </div>
+
+                        {safeDream.action.agenticHooks &&
+                          safeDream.action.agenticHooks.length > 0 && (
+                            <div className="space-y-3">
+                              <h4 className="text-sm font-semibold text-foreground">
+                                Actionable Steps:
+                              </h4>
+                              <div className="space-y-2">
+                                {safeDream.action.agenticHooks.map(
+                                  (hook, index) => {
+                                    const action =
+                                      hookUIMap[hook as AgenticHook];
+
+                                    return (
+                                      <div
+                                        key={index}
+                                        className="flex items-center gap-3 p-3 bg-background/30 rounded-lg border border-border/50 hover:bg-background/50 transition-colors"
+                                      >
+                                        <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                                          <span className="text-xs font-semibold text-primary">
+                                            {index + 1}
+                                          </span>
+                                        </div>
+
+                                        <div className="flex space-y-2">
+                                          {action && (
+                                            <button
+                                              disabled={isTodoistConnected}
+                                              onClick={action.onClick}
+                                              className="flex px-2 py-1 gap-2 items-center text-xs font-medium rounded-md
+               bg-primary/90 text-white 
+               cursor-pointer disabled:cursor-not-allowed disabled:opacity-80"
+                                            >
+                                              {action.icon}
+                                              {action.label}
+                                            </button>
+                                          )}
+                                        </div>
+                                      </div>
+                                    );
+                                  },
+                                )}
+                              </div>
+                            </div>
+                          )}
+
+                        {isTodoistConnected && (
+                          <Button
+                            onClick={() =>
+                              handleStartReflection(
+                                safeDream.action.id as string,
+                              )
+                            }
+                            className="w-full bg-primary cursor-pointer hover:bg-primary/90 mt-4"
                           >
                             <svg
-                              className="w-3 h-3"
+                              className="w-4 h-4 mr-2"
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"
@@ -549,71 +626,29 @@ export function DreamDetails({
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 strokeWidth={2}
-                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                              />
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                               />
                             </svg>
-                            {safeDream.action.duration}
-                          </Badge>
+                            Start Reflection Practice
+                          </Button>
                         )}
                       </div>
+                    </div>
 
-                      <div className="p-4 bg-background/50 rounded-lg">
-                        <p className="text-sm sm:text-base text-foreground leading-relaxed">
-                          {safeDream.action.content}
-                        </p>
-                      </div>
-
-                      {safeDream.action.agenticHooks &&
-                        safeDream.action.agenticHooks.length > 0 && (
-                          <div className="space-y-3">
-                            <h4 className="text-sm font-semibold text-foreground">
-                              Actionable Steps:
-                            </h4>
-                            <div className="space-y-2">
-                              {safeDream.action.agenticHooks.map(
-                                (hook, index) => {
-                                  const action = hookUIMap[hook as AgenticHook];
-
-                                  return (
-                                    <div
-                                      key={index}
-                                      className="flex items-center gap-3 p-3 bg-background/30 rounded-lg border border-border/50 hover:bg-background/50 transition-colors"
-                                    >
-                                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-                                        <span className="text-xs font-semibold text-primary">
-                                          {index + 1}
-                                        </span>
-                                      </div>
-
-                                      <div className="flex-1 space-y-2">
-                                        {action && (
-                                          <button
-                                            onClick={action.onClick}
-                                            className="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-md
-                             bg-primary text-primary-foreground hover:bg-primary/90 transition cursor-pointer"
-                                          >
-                                            {action.icon}
-                                            {action.label}
-                                          </button>
-                                        )}
-                                      </div>
-                                    </div>
-                                  );
-                                },
-                              )}
-                            </div>
-                          </div>
-                        )}
-
-                      {isTodoistConnected && (
-                        <Button
-                          onClick={() =>
-                            handleStartReflection(safeDream.action.id as string)
-                          }
-                          className="w-full bg-primary hover:bg-primary/90 mt-4"
-                        >
+                    <div className="pt-4 border-t border-border/50">
+                      <h4 className="text-sm font-semibold text-foreground mb-3">
+                        How to get the most out of this practice:
+                      </h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="flex items-start gap-2 p-3 bg-muted/20 rounded-lg">
                           <svg
-                            className="w-4 h-4 mr-2"
+                            className="w-4 h-4 text-primary mt-0.5 flex-shrink-0"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -622,107 +657,78 @@ export function DreamDetails({
                               strokeLinecap="round"
                               strokeLinejoin="round"
                               strokeWidth={2}
-                              d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                             />
+                          </svg>
+                          <span className="text-sm text-muted-foreground">
+                            Find a quiet, comfortable space where you won't be
+                            disturbed
+                          </span>
+                        </div>
+                        <div className="flex items-start gap-2 p-3 bg-muted/20 rounded-lg">
+                          <svg
+                            className="w-4 h-4 text-primary mt-0.5 flex-shrink-0"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
                             <path
                               strokeLinecap="round"
                               strokeLinejoin="round"
                               strokeWidth={2}
-                              d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                             />
                           </svg>
-                          Start Reflection Practice
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="pt-4 border-t border-border/50">
-                    <h4 className="text-sm font-semibold text-foreground mb-3">
-                      How to get the most out of this practice:
-                    </h4>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div className="flex items-start gap-2 p-3 bg-muted/20 rounded-lg">
-                        <svg
-                          className="w-4 h-4 text-primary mt-0.5 flex-shrink-0"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
-                        <span className="text-sm text-muted-foreground">
-                          Find a quiet, comfortable space where you won't be
-                          disturbed
-                        </span>
-                      </div>
-                      <div className="flex items-start gap-2 p-3 bg-muted/20 rounded-lg">
-                        <svg
-                          className="w-4 h-4 text-primary mt-0.5 flex-shrink-0"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
-                        <span className="text-sm text-muted-foreground">
-                          Set aside dedicated time (10-15 minutes works well)
-                        </span>
-                      </div>
-                      <div className="flex items-start gap-2 p-3 bg-muted/20 rounded-lg">
-                        <svg
-                          className="w-4 h-4 text-primary mt-0.5 flex-shrink-0"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-                          />
-                        </svg>
-                        <span className="text-sm text-muted-foreground">
-                          Keep a journal nearby to capture any insights
-                        </span>
-                      </div>
-                      <div className="flex items-start gap-2 p-3 bg-muted/20 rounded-lg">
-                        <svg
-                          className="w-4 h-4 text-primary mt-0.5 flex-shrink-0"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
-                          />
-                        </svg>
-                        <span className="text-sm text-muted-foreground">
-                          Approach with curiosity rather than expectation
-                        </span>
+                          <span className="text-sm text-muted-foreground">
+                            Set aside dedicated time (10-15 minutes works well)
+                          </span>
+                        </div>
+                        <div className="flex items-start gap-2 p-3 bg-muted/20 rounded-lg">
+                          <svg
+                            className="w-4 h-4 text-primary mt-0.5 flex-shrink-0"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                            />
+                          </svg>
+                          <span className="text-sm text-muted-foreground">
+                            Keep a journal nearby to capture any insights
+                          </span>
+                        </div>
+                        <div className="flex items-start gap-2 p-3 bg-muted/20 rounded-lg">
+                          <svg
+                            className="w-4 h-4 text-primary mt-0.5 flex-shrink-0"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                            />
+                          </svg>
+                          <span className="text-sm text-muted-foreground">
+                            Approach with curiosity rather than expectation
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </Card>
+              </Card>
+            )}
           </div>
         </div>
       </div>
+
       <ConfirmModal
         open={confirmDeleteOpen}
         onClose={() => setConfirmDeleteOpen(false)}

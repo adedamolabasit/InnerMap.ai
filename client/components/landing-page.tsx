@@ -22,7 +22,12 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
           <Button variant="ghost" className="text-sm">
             About
           </Button>
-          <Button variant="default" size="sm" onClick={onGetStarted}>
+          <Button
+            variant="default"
+            size="sm"
+            onClick={onGetStarted}
+            className="cursor-pointer"
+          >
             Get Started
           </Button>
         </div>
@@ -42,7 +47,7 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
         <Button
           size="lg"
           onClick={onGetStarted}
-          className="rounded-full px-8 py-6 text-base"
+          className="rounded-full px-8 py-6 text-base cursor-pointer"
         >
           Start Journaling
         </Button>
