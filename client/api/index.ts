@@ -18,9 +18,7 @@ export const createDreamAnalysis = async (
   });
 };
 
-export const getUserDreams = async (
-  userId: string,
-): Promise<DreamListResponse[]> => {
+export const getUserDreams = async (): Promise<DreamListResponse[]> => {
   return apiClient<DreamListResponse[]>(`/dreams`);
 };
 
@@ -65,7 +63,14 @@ export const audioTranscribe = async (
   });
 };
 
-export const dreamService = {
+export const authUser = async (): Promise<ApiResponse<{ url: string }>> => {
+  return apiClient<ApiResponse<any>>(`/auth/login`, {
+    method: "POST",
+    body: JSON.stringify({ action: "login" }),
+  });
+};
+
+export const apiService = {
   createDreamAnalysis,
   getUserDreams,
   getDreamById,
@@ -73,4 +78,5 @@ export const dreamService = {
   getProfile,
   startReflection,
   audioTranscribe,
+  authUser,
 };

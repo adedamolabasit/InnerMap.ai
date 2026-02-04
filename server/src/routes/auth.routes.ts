@@ -1,7 +1,9 @@
 import { Router } from "express";
-import { authTodoist, authTodoisCallback, getProfile } from "../controllers/auth.controller";
+import { authLogin, authTodoist, authTodoisCallback, getProfile } from "../controllers/auth.controller";
 
 const router = Router();
+
+router.post("/auth/login", authLogin);
 
 router.get("/auth/todoist/:dreamId/:userId", authTodoist);
 

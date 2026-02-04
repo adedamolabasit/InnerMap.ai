@@ -117,6 +117,9 @@ export const useDreamManager = () => {
 
         setSelectedDream("");
         setCurrentView("journal");
+
+        router.push("/?view=journal", { scroll: false });
+
         refetch();
       },
       onError: (error) => {

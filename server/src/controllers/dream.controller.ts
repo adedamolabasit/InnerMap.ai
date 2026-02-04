@@ -194,6 +194,7 @@ export const startReflection = async (req: Request, res: Response) => {
     const todoist = await addTodoistTask(
       profile.todoistAccessToken as string,
       dream.action,
+      dream.reflection
     );
 
     await Dream.updateOne(

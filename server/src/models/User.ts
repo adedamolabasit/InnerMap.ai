@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from "mongoose";
 
 export interface UserDocument extends Document {
   visitorId?: string;      
-  walletId?: string;      
+  walletAddress?: string;      
   email?: string;         
   name?: string;           
   username?: string;      
@@ -18,7 +18,7 @@ export interface UserDocument extends Document {
 const UserSchema = new Schema<UserDocument>(
   {
     visitorId: { type: String, unique: true, sparse: true }, 
-    walletId: { type: String, unique: true, sparse: true },
+    walletAddress: { type: String, unique: true, sparse: true },
 
     email: { type: String, unique: true, sparse: true },
     name: { type: String },

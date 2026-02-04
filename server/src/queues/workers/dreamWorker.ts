@@ -7,6 +7,7 @@ import { analyzeReflection } from "../../agents/reflection.agent";
 import { analyzeAction } from "../../agents/action.agent";
 import { executeAgenticHooks } from "../../services/agenticTools";
 
+
 connectDB().then(() => console.log("Worker connected to MongoDB"));
 
 const worker = new Worker(

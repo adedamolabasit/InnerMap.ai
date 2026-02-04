@@ -1,3 +1,5 @@
+"use client";
+
 import { FC } from "react";
 import { Card } from "@/shared/components/Ui/card";
 import { SafeDreamParams } from "@/shared/types/types";
@@ -9,13 +11,21 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/shared/components/Ui/tooltip";
+import { ConnectWallet } from "./Wallet";
+import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
+import { getOrCreateVisitorId } from "@/api/config";
 
 interface ProfileParams {
   safeDream: SafeDreamParams;
-  dream: DreamResponse
+  dream: DreamResponse;
 }
 
 export const Profile: FC<ProfileParams> = ({ safeDream, dream }) => {
+  const { user, primaryWallet } = useDynamicContext();
+
+  const connected = Boolean(user && primaryWallet);
+  const walletAddress = primaryWallet?.address;
+
   const getAgencyColor = (percentage: number) => {
     if (percentage < 30) return "text-red-500 bg-red-500/10";
     if (percentage < 60) return "text-yellow-500 bg-yellow-500/10";
@@ -27,8 +37,6 @@ export const Profile: FC<ProfileParams> = ({ safeDream, dream }) => {
     .split(/\s+/)
     .filter(Boolean).length;
   const agencyPercentage = Math.round(safeDream.intake.agency * 100);
-
-
 
   return (
     <div className="lg:col-span-1">
@@ -90,10 +98,12 @@ export const Profile: FC<ProfileParams> = ({ safeDream, dream }) => {
                   />
                 </svg>
 
-                <span>User {dream?.userId}</span>
+                <span>User: {user?.email || getOrCreateVisitorId()}</span>
+              </div>
 
-                {/* Guest Badge */}
-                {dream && (
+              <div className="flex w-full justify-start gap-12 items-center">
+                {/* <ConnectWallet /> */}
+                {!connected && (
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -116,24 +126,9 @@ export const Profile: FC<ProfileParams> = ({ safeDream, dream }) => {
                   </TooltipProvider>
                 )}
               </div>
-
-              {/* Connect Account Button */}
-              {dream && (
-                <Button
-                  onClick={() => (window.location.href = "")}
-                  size="sm"
-                  variant="outline"
-                  className="mt-2"
-                >
-                  Connect Account
-                </Button>
-              )}
             </div>
           </div>
         </Card>
-        {/* <div>
-          <DreamAnalysis analysisCards={analysisCards} />
-        </div> */}
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import {
   deleteDream,
   startReflection,
   audioTranscribe,
+  authUser,
 } from "..";
 import {
   CreateDreamDTO,
@@ -38,5 +39,11 @@ export const useAudioTranscribe = () => {
     AudioTranscribeInput
   >({
     mutationFn: audioTranscribe,
+  });
+};
+
+export const useAuthUser = () => {
+  return useMutation<ApiResponse<any>, Error, any>({
+    mutationFn: authUser,
   });
 };

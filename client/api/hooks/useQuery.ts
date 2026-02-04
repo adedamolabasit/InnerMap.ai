@@ -11,7 +11,7 @@ import {
 export const useUserDreams = (userId: string) => {
   return useQuery<DreamListResponse[]>({
     queryKey: ["all-users-dream"],
-    queryFn: () => getUserDreams(userId),
+    queryFn: () => getUserDreams(),
     enabled: !!userId,
     staleTime: 0,
     refetchInterval: 2000,
@@ -35,7 +35,7 @@ export const useProfile = () => {
     queryKey: ["profile"],
     queryFn: () => getProfile(),
     staleTime: 0,
-    refetchInterval: 2000,
+    // refetchInterval: 2000,
     refetchOnWindowFocus: true,
   });
 };

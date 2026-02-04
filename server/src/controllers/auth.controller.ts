@@ -1,6 +1,46 @@
 import { Request, Response } from "express";
 import axios from "axios";
 import { User } from "../models/User";
+import jwt from "jsonwebtoken";
+
+
+export const authLogin = async (
+  req: Request,
+  res: Response,
+) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const token = jwt.sign(
+      {
+        sub: user.id,
+        type: req.user.type,
+        walletAddress: user.walletAddress ?? null,
+      },
+      process.env.JWT_SECRET as string,
+      { expiresIn: "7d" },
+    );
+
+    return res.status(200).json({
+      token,
+      user: {
+        id: user.id,
+        type: req.user.type,
+        walletAddress: user.walletAddress ?? null,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ error: "Authentication failed" });
+  }
+};
 
 export const authTodoist = async (req: Request, res: Response) => {
   try {

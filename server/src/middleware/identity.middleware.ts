@@ -8,15 +8,17 @@ export async function identifyUser(
   next: NextFunction,
 ) {
   try {
-    const walletId = req.headers["user-id"] as string | undefined;
+    const walletAddress = req.headers["wallet-address"] as string | undefined;
     const visitorId = req.headers["visitor-id"] as string | undefined;
 
     let userType: "user" | "visitor" | null = null;
     let identifier: string | undefined;
 
-    if (walletId) {
+    console.log(visitorId, "visitorId");
+
+    if (walletAddress !== "undefined") {
       userType = "user";
-      identifier = walletId;
+      identifier = walletAddress;
     } else if (visitorId) {
       userType = "visitor";
       identifier = visitorId;
@@ -26,14 +28,14 @@ export async function identifyUser(
 
     const query =
       userType === "user"
-        ? { walletId: identifier }
+        ? { walletAddress: identifier }
         : { visitorId: identifier };
 
     const user = await UserModel.findOneAndUpdate(
       query,
       {
         $setOnInsert: {
-          walletId: userType === "user" ? identifier : undefined,
+          walletAddress: userType === "user" ? identifier : undefined,
           visitorId: userType === "visitor" ? identifier : undefined,
           createdAt: new Date(),
         },
