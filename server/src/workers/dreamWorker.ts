@@ -1,12 +1,12 @@
 import { Worker } from "bullmq";
-import { connectDB } from "../../db";
-import { connection } from "../queue";
-import Dream from "../../models/Dream";
-import { analyzeDreamIntake } from "../../agents/intake.agent";
-import { analyzeReflection } from "../../agents/reflection.agent";
-import { analyzeAction } from "../../agents/action.agent";
-import { executeAgenticHooks } from "../../services/agenticTools";
-import { openaiThread } from "../../services/opik";
+import { connectDB } from "../db";
+import { connection } from "../queues/queue";
+import Dream from "../models/Dream";
+import { analyzeDreamIntake } from "../agents/intake.agent";
+import { analyzeReflection } from "../agents/reflection.agent";
+import { analyzeAction } from "../agents/action.agent";
+import { executeAgenticHooks } from "../services/agenticTools";
+import { openaiThread } from "../services/opik";
 
 connectDB().then(() => console.log("Worker connected to MongoDB"));
 

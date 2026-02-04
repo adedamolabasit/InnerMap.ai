@@ -172,10 +172,6 @@ export function EmptySearch({ onClear }: { onClear?: () => void }) {
   );
 }
 
-export default function NotFound() {
-  return <div>404 page</div>;
-}
-
 export function DreamNotFound({ onBack }: { onBack: () => void }) {
   return (
     <div className="min-h-screen flex items-center justify-center">

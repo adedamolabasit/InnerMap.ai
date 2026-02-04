@@ -14,8 +14,6 @@ export async function identifyUser(
     let userType: "user" | "visitor" | null = null;
     let identifier: string | undefined;
 
-    console.log(visitorId, "visitorId");
-
     if (walletAddress !== "undefined") {
       userType = "user";
       identifier = walletAddress;
@@ -50,7 +48,6 @@ export async function identifyUser(
 
     next();
   } catch (err) {
-    console.error("identifyUser error:", err);
     next(err);
   }
 }
