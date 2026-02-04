@@ -3,11 +3,21 @@ import cors from "cors";
 import dreamRoutes from "./routes/dream.routes";
 import authRoutes from "./routes/auth.routes";
 import { identifyUser } from "./middleware/identity.middleware";
-import { authenticateToken } from "./middleware/authenticate.middleware";
+// import { authenticateToken } from "./middleware/authenticate.middleware";
 
 const app = express();
 
-app.use(cors());
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://innermapai-production.up.railway.app",
+];
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  }),
+);
 
 app.use(express.json());
 
