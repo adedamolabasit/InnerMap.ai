@@ -14,7 +14,6 @@ export const useUserDreams = (userId: string) => {
     queryFn: () => getUserDreams(),
     enabled: !!userId,
     staleTime: 0,
-    refetchInterval: 2000,
     refetchOnWindowFocus: true,
   });
 };
@@ -25,7 +24,7 @@ export const useDream = (dreamId: string) => {
     queryFn: () => getDreamById(dreamId),
     enabled: !!dreamId,
     staleTime: 0,
-    refetchInterval: 2000,
+    refetchInterval: 8000,
     refetchOnWindowFocus: true,
   });
 };
@@ -35,7 +34,6 @@ export const useProfile = () => {
     queryKey: ["profile"],
     queryFn: () => getProfile(),
     staleTime: 0,
-    refetchInterval: 2000,
     refetchOnWindowFocus: true,
   });
 };
