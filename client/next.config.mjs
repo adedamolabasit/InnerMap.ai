@@ -7,10 +7,9 @@ const nextConfig = {
     unoptimized: true,
   },
   webpack(config, { isServer }) {
-    // Ignore all test files from thread-stream
     config.module.rules.push({
       test: /thread-stream\/test/,
-      use: 'null-loader', // ignore these files
+      use: 'null-loader', 
     });
 
     return config;
