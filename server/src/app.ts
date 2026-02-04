@@ -8,8 +8,7 @@ import { identifyUser } from "./middleware/identity.middleware";
 const app = express();
 
 const allowedOrigins = [
-  "http://localhost:3000",
-  "https://innermapai-production.up.railway.app",
+  "https://inner-map-ai.vercel.app",
 ];
 
 app.use(
