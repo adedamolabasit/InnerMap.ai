@@ -7,7 +7,6 @@ export const authenticateToken = async (
   next: NextFunction,
 ) => {
   try {
-    console.log(req.user,"hhhh")
     if (req.user?.type === "visitor") {
       next();
     } else {
