@@ -32,53 +32,6 @@ export const audioTranscribe = async (req: Request, res: Response) => {
   }
 };
 
-// export const submitDream = async (req: AuthenticatedRequest, res: Response) => {
-//   try {
-//     const userId = req.user?.id;
-//     if (!userId) return res.status(401).json({ error: "Unauthorized" });
-
-//     const bodyError = validateBody(["dreamText"], req.body);
-//     if (bodyError) return res.status(400).json({ error: bodyError });
-
-//     const { dreamText } = req.body;
-
-//     const lastDream = await Dream.findOne({ userId }).sort({ createdAt: -1 });
-//     const previousActionCompleted = lastDream?.action?.completed ?? false;
-
-//     // TODO: Move agent processing to a queue (BullMQ/Redis) for async processing
-
-//     const intake = await analyzeDreamIntake(dreamText);
-//     const reflection = await analyzeReflection(dreamText);
-
-//     const action = await analyzeAction(
-//       reflection.themes,
-//       intake.agency,
-//       previousActionCompleted,
-//     );
-
-//     const hookResults = await executeAgenticHooks(action.agenticHooks);
-
-//     const storedAction: StoredAction = {
-//       ...action,
-//       hookResults,
-//       completed: false,
-//     };
-
-//     const dreamEntry = await Dream.create({
-//       userId,
-//       dreamText,
-//       intake,
-//       reflection,
-//       action: storedAction,
-//     });
-
-//     res.json(dreamEntry);
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ error: "Failed to process dream" });
-//   }
-// };
-
 export const submitDream = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const userId = req.user?.id;

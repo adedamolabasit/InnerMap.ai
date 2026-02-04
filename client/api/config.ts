@@ -1,8 +1,7 @@
 export const API_BASE_URL = "https://innermapai-production.up.railway.app/api";
 
-//  Visitor (Guest) Identity
-export function getOrCreateVisitorId(): string | null {
-  if (typeof window === "undefined") return null;
+export function getOrCreateVisitorId(): string {
+  if (typeof window === "undefined") return "server-visitor"; 
 
   let id = localStorage.getItem("visitorId");
 
@@ -14,45 +13,18 @@ export function getOrCreateVisitorId(): string | null {
   return id;
 }
 
-//  Wallet Identity
-export function getWalletAddress(): string | null {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem("walletAddress");
-}
-
-export function setWalletAddress(address: string) {
-  if (typeof window === "undefined") return;
-  localStorage.setItem("walletAddress", address);
-}
-
-export function clearWalletAddress() {
-  if (typeof window === "undefined") return;
-  localStorage.removeItem("walletAddress");
-}
-
-//  API Client
 export const apiClient = async <T>(
   endpoint: string,
-  options: RequestInit = {},
+  options: RequestInit = {}
 ): Promise<T> => {
   const url = `${API_BASE_URL}${endpoint}`;
-
-  const walletAddress = getWalletAddress();
   const visitorId = getOrCreateVisitorId();
-
 
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
+    "visitor-id": visitorId,
     ...(options.headers as Record<string, string> || {}),
   };
-
-  if (visitorId) {
-    headers["visitor-id"] = visitorId;
-  }
-
-  if (walletAddress) {
-    headers["wallet-address"] = walletAddress;
-  }
 
   const config: RequestInit = {
     ...options,
