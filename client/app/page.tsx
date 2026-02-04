@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { LandingPage } from "@/components/LandingPage";
 import { DreamCapture } from "@/components/DreamCapture";
 import { MetricsBoard } from "@/components/MetricsBoard";
@@ -13,7 +14,7 @@ import {
   DreamNotFound,
 } from "@/shared/components/AppStates";
 
-export default function Home() {
+function HomeContent()  {
   const {
     currentView,
     selectedDream,
@@ -124,5 +125,14 @@ export default function Home() {
         </div>
       )}
     </main>
+  );
+}
+
+
+export default function Home() {
+  return (
+    <Suspense fallback={<FullPageLoading message="Loading your dreams..." />}>
+      <HomeContent />
+    </Suspense>
   );
 }

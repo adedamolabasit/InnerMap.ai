@@ -19,13 +19,18 @@ export const useDreamManager = () => {
   const [currentView, setCurrentView] = useState<View>("landing");
   const [selectedDream, setSelectedDream] = useState<string>("");
   const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [dreamIdFromUrl, setDreamIdFromUrl] = useState<string | null>(null);
 
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { toast } = useToast();
 
-  const dreamIdFromUrl = searchParams.get("dreamId");
+  useEffect(() => {
+  const id = searchParams.get("dreamId");
+  setDreamIdFromUrl(id);
+}, [searchParams]);
+
 
   const {
     data: dreams = [],
@@ -41,7 +46,7 @@ export const useDreamManager = () => {
     isError: dreamError,
     error: dreamErrorDetails,
     refetch: refetchDream,
-  } = useDream(dreamIdFromUrl as string);
+  } = useDream(dreamIdFromUrl || "");
 
   const { data: profile } = useProfile();
   const { mutate: createDream, isPending: isCreatingDream } = useCreateDream();

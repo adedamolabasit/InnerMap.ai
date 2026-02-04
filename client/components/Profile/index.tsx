@@ -1,21 +1,16 @@
 "use client";
 
-import { FC, useEffect, useRef, useCallback } from "react";
+import { FC } from "react";
 import { Card } from "@/shared/components/Ui/card";
 import { SafeDreamParams } from "@/shared/types/types";
 import { DreamResponse } from "@/shared/types/types";
-// import { Button } from "@/shared/components/Ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/shared/components/Ui/tooltip";
-import { ConnectWallet } from "./Wallet";
-import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { getOrCreateVisitorId } from "@/api/config";
-import { setWalletAddress } from "@/api/config";
-import { useAuthUser } from "@/api/hooks/useMutate";
 
 interface ProfileParams {
   safeDream: SafeDreamParams;
@@ -23,39 +18,6 @@ interface ProfileParams {
 }
 
 export const Profile: FC<ProfileParams> = ({ safeDream, dream }) => {
-  const { user, primaryWallet } = useDynamicContext();
-
-  const connected = Boolean(user && primaryWallet);
-  const walletAddress = primaryWallet?.address;
-
-  const hasAuthedRef = useRef(false);
-
-  const { mutate: authenticateUser } = useAuthUser();
-
-  const handleAuthentication = useCallback(() => {
-    authenticateUser({
-      onSuccess: (data: any) => {
-        // TODO: continue this after hack
-      },
-    });
-  }, [authenticateUser]);
-
-  useEffect(() => {
-    setWalletAddress(walletAddress as string);
-
-    if (!hasAuthedRef.current) {
-      hasAuthedRef.current = true;
-      handleAuthentication();
-    }
-  }, [walletAddress, connected, handleAuthentication]);
-
-  useEffect(() => {
-    if (!connected) {
-      hasAuthedRef.current = false;
-      localStorage.removeItem("token");
-    }
-  }, [connected]);
-
   const getAgencyColor = (percentage: number) => {
     if (percentage < 30) return "text-red-500 bg-red-500/10";
     if (percentage < 60) return "text-yellow-500 bg-yellow-500/10";
@@ -127,34 +89,30 @@ export const Profile: FC<ProfileParams> = ({ safeDream, dream }) => {
                   />
                 </svg>
 
-                <span>User: {user?.email || getOrCreateVisitorId()}</span>
+                <span>User: {getOrCreateVisitorId()}</span>
               </div>
 
               <div className="flex w-full justify-start gap-12 items-center">
-                {/* I comment this out for the purpose of the hackthon, the integration works fine */}
-                {/* <ConnectWallet /> */}
-                {!connected && (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-800 text-xs cursor-help">
-                          <svg
-                            className="w-3 h-3"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                          >
-                            <path d="M18 10c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zM9 9V5h2v4H9zm0 2h2v4H9v-4z" />
-                          </svg>
-                          Guest
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        You are a guest user. Log in to retain your data across
-                        browsers.
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                )}
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-800 text-xs cursor-help">
+                        <svg
+                          className="w-3 h-3"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path d="M18 10c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zM9 9V5h2v4H9zm0 2h2v4H9v-4z" />
+                        </svg>
+                        Guest
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      You are a guest user. Log in to retain your data across
+                      browsers.
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
             </div>
           </div>

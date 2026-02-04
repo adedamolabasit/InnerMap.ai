@@ -1,3 +1,5 @@
+"use client";  
+
 import { useState, FC } from "react";
 import { DreamInsightCard } from "@/shared/types/types";
 import { Button } from "@/shared/components/Ui/button";

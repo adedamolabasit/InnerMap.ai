@@ -5,6 +5,7 @@ import "./globals.css";
 import Providers from "./providers";
 import { Toaster } from "@/shared/components/Ui/toaster";
 
+
 export const metadata: Metadata = {
   title: "InnerMap - Dream Reflection & AI Insights",
   description:
