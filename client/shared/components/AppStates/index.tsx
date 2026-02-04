@@ -172,33 +172,33 @@ export function EmptySearch({ onClear }: { onClear?: () => void }) {
   );
 }
 
-export function NotFound({
-  title = "Page not found",
-  description = "The page you're looking for doesn't exist or has been moved.",
-  showHomeButton = true,
-}: {
-  title?: string;
-  description?: string;
-  showHomeButton?: boolean;
-}) {
-  return (
-    <main className="min-h-screen bg-background flex items-center justify-center">
-      <div className="text-center max-w-md p-6">
-        <div className="text-4xl mb-4">404</div>
-        <h2 className="text-xl font-semibold text-foreground mb-2">{title}</h2>
-        <p className="text-muted-foreground mb-6">{description}</p>
-        {showHomeButton && (
-          <a
-            href="/"
-            className="inline-block px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity"
-          >
-            Go to Home
-          </a>
-        )}
-      </div>
-    </main>
-  );
-}
+// export function NotFound({
+//   title = "Page not found",
+//   description = "The page you're looking for doesn't exist or has been moved.",
+//   showHomeButton = true,
+// }: {
+//   title?: string;
+//   description?: string;
+//   showHomeButton?: boolean;
+// }) {
+//   return (
+//     <main className="min-h-screen bg-background flex items-center justify-center">
+//       <div className="text-center max-w-md p-6">
+//         <div className="text-4xl mb-4">404</div>
+//         <h2 className="text-xl font-semibold text-foreground mb-2">{title}</h2>
+//         <p className="text-muted-foreground mb-6">{description}</p>
+//         {showHomeButton && (
+//           <a
+//             href="/"
+//             className="inline-block px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity"
+//           >
+//             Go to Home
+//           </a>
+//         )}
+//       </div>
+//     </main>
+//   );
+// }
 
 export function DreamNotFound({ onBack }: { onBack: () => void }) {
   return (
