@@ -5,6 +5,7 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useToast } from "@/shared/hooks/useToast";
 import { useUserDreams, useDream, useProfile } from "@/api/hooks/useQuery";
 import { useCreateDream, useDeleteDream } from "@/api/hooks/useMutate";
+import { useCompleteAction } from "@/api/hooks/useMutate";
 import { getOrCreateVisitorId } from "@/api/config";
 import {
   DreamListResponse,
@@ -44,6 +45,7 @@ export const useDreamManager = () => {
 
   const { data: profile } = useProfile();
   const { mutate: createDream, isPending: isCreatingDream } = useCreateDream();
+  const { mutate: completeAction } = useCompleteAction();
   const { mutate: deleteDream, isPending: isDeleting } = useDeleteDream();
 
   useEffect(() => {
@@ -135,6 +137,29 @@ export const useDreamManager = () => {
     });
   };
 
+  const handleCompleteAction = (content: string) => {
+    completeAction(
+      {
+        dreamId: content,
+      },
+      {
+        onSuccess: () => {
+          refetchDream;
+        },
+        onError: (error) => {
+          toast({
+            title: "Something went wrong",
+            description:
+              error instanceof Error
+                ? error.message
+                : "Failed to analyze dream. Please try again.",
+            variant: "destructive",
+          });
+        },
+      },
+    );
+  };
+
   const handleSelectDream = (dreamId: string) => {
     router.push(`${pathname}?view=details&dreamId=${dreamId}`);
   };
@@ -175,6 +200,7 @@ export const useDreamManager = () => {
     handleSaveDream,
     handleDeleteDream,
     handleSelectDream,
+    handleCompleteAction,
     navigateToInsights,
     navigateToJournal,
     navigateToCapture,

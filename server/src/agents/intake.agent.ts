@@ -1,8 +1,5 @@
-import { openai } from "../services/openai.service";
+import { openai } from "../services/opik";
 import { DreamIntakeResult } from "./types";
-import { Opik } from "opik";
-
-const client = new Opik();
 
 export const dreamIntakeAgentPrompt = (dreamText: string) => `
 You are the Dream Intake Agent.
@@ -26,16 +23,14 @@ Return JSON strictly in this format:
 export const analyzeDreamIntake = async (
   dreamText: string,
 ): Promise<DreamIntakeResult> => {
-  const response = await openai.responses.create({
+  const completion = await openai.responses.create({
     model: "gpt-4.1-mini",
     input: dreamIntakeAgentPrompt(dreamText),
   });
 
-  const trace = client.trace({
-    name: "Dream Intake Agent",
-    input: { prompt: dreamIntakeAgentPrompt },
-    output: { response: response.output_text },
-  });
+  const result = JSON.parse(completion.output_text) as DreamIntakeResult;
 
-  return JSON.parse(response.output_text) as DreamIntakeResult;
+  await openai.flush();
+
+  return result;
 };

@@ -1,6 +1,7 @@
-import { openai } from "../services/openai.service";
+import { openai } from "../services/opik";
 import { ActionAgentResult } from "./types";
 import { GLOBAL_SYSTEM_PROMPT } from "./opik/prompts";
+import { openaiThread } from "../services/opik";
 
 export const actionAgentPrompt = (
   themes: string[],
@@ -69,7 +70,6 @@ Output format:
 }
 `;
 
-
 export const analyzeAction = async (
   themes: string[],
   agency: number,
@@ -80,6 +80,7 @@ export const analyzeAction = async (
     input: actionAgentPrompt(themes, agency, previousActionCompleted),
   });
 
+  await openai.flush();
   const raw = response.output_text.replace(/```/g, "").trim();
   return JSON.parse(raw) as ActionAgentResult;
 };

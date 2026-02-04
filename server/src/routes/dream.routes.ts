@@ -15,8 +15,6 @@ router.post("/audio-transcribe", audioTranscribe);
 
 router.post("/dream", submitDream);
 
-router.post("/dream/complete", completeAction);
-
 router.get("/dreams", getUserDreams);
 
 router.get("/dream/:dreamId", getDreamById);
@@ -24,5 +22,7 @@ router.get("/dream/:dreamId", getDreamById);
 router.delete("/dream/:dreamId", deleteDream);
 
 router.post("/start-reflection", startReflection);
+
+router.post("/dream/complete", completeAction);
 
 export default router;

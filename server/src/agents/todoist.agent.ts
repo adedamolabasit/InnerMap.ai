@@ -1,4 +1,4 @@
-import { openai } from "../services/openai.service";
+import { openai } from "../services/opik";
 type Reflection = {
   themes: string[];
   insights: string;
@@ -26,9 +26,6 @@ Do NOT pathologize. Keep actions gentle, practical, and self-directed.
 `
     : "";
 
-  /* =======================
-     MAIN TASK
-  ======================= */
   const mainTaskRes = await openai.responses.create({
     model: "gpt-4.1-mini",
     input: [
@@ -117,6 +114,7 @@ Task:
   } catch {
     throw new Error("Todoist AI returned invalid JSON for subtasks");
   }
+  await openai.flush();
 
   return { mainTask, subtasks };
 }

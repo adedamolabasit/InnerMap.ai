@@ -3,7 +3,12 @@
 import { useState, useMemo } from "react";
 import { Button } from "@/shared/components/Ui/button";
 import { Card } from "@/shared/components/Ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/Ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/shared/components/Ui/tabs";
 import { ConfirmModal } from "../../shared/components/Ui/confirm-modal";
 import { TodoistIcon } from "../../shared/components/Ui/TodoistIcon";
 import { DreamAnalysis } from "./DreamAnalysis";
@@ -13,7 +18,11 @@ import { DreamNarration } from "./DreamNarration";
 import { API_BASE_URL, getOrCreateVisitorId } from "@/api/config";
 import { useProfileConnection } from "@/shared/hooks/useProfileConnection";
 import { useStartReflection } from "@/api/hooks/useMutate";
-import { DreamDetailsProps, AgenticHook, SafeDreamParams } from "@/shared/types/types";
+import {
+  DreamDetailsProps,
+  AgenticHook,
+  SafeDreamParams,
+} from "@/shared/types/types";
 
 import { infoCards } from "@/shared/config";
 import { Profile } from "../Profile";
@@ -121,6 +130,7 @@ export function DreamOverview({
         content: dream?.action?.content ?? "",
         duration: dream?.action?.duration,
         agenticHooks: dream?.action?.agenticHooks ?? [],
+        completed: dream?.action?.completed,
         id: dream?.action?._id,
       },
     };
@@ -243,6 +253,7 @@ export function DreamOverview({
                 <TabsContent value="insights" className="p-0 m-0">
                   <DreamInsight
                     safeDream={safeDream}
+                    dream={dream}
                     hookUIMap={hookUIMap}
                     isTodoistConnected={isTodoistConnected}
                     handleStartReflection={handleStartReflection}

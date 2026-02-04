@@ -51,6 +51,15 @@ export const startReflection = async (
   });
 };
 
+export const completeAction = async (
+  dreamId: string,
+): Promise<ApiResponse<{ url: string }>> => {
+  return apiClient<ApiResponse<any>>(`/dream/complete`, {
+    method: "POST",
+    body: JSON.stringify(dreamId),
+  });
+};
+
 export const audioTranscribe = async (
   input: AudioTranscribeInput,
 ): Promise<ApiResponse<AudioTranscribeResponse>> => {

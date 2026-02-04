@@ -56,6 +56,7 @@ export interface DreamResponse {
     content: string;
     duration?: string;
     agenticHooks: string[];
+    completed: boolean
     _id: string;
   };
   createdAt: string;
@@ -94,6 +95,7 @@ export interface SafeDreamParams {
     content: string;
     duration?: string;
     agenticHooks: string[];
+    completed: boolean
     id?: string;
   };
 }

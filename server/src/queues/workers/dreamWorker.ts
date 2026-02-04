@@ -6,7 +6,7 @@ import { analyzeDreamIntake } from "../../agents/intake.agent";
 import { analyzeReflection } from "../../agents/reflection.agent";
 import { analyzeAction } from "../../agents/action.agent";
 import { executeAgenticHooks } from "../../services/agenticTools";
-
+import { openaiThread } from "../../services/opik";
 
 connectDB().then(() => console.log("Worker connected to MongoDB"));
 
@@ -20,20 +20,46 @@ const worker = new Worker(
 
     const intake = await analyzeDreamIntake(dreamText);
     const reflection = await analyzeReflection(dreamText);
-    const action = await analyzeAction(reflection.themes, intake.agency, previousActionCompleted);
+    const action = await analyzeAction(
+      reflection.themes,
+      intake.agency,
+      previousActionCompleted,
+    );
     const hookResults = await executeAgenticHooks(action.agenticHooks);
+
+    openaiThread.trace({
+      name: "dream-cycle",
+      threadId: userId,
+
+      metadata: {
+        dreamId,
+        agency: intake.agency,
+        previousActionCompleted,
+        actionType: action.type,
+      },
+
+      input: {
+        dreamText,
+      },
+
+      output: {
+        themes: reflection.themes,
+        action: action.content,
+      },
+    });
 
     await Dream.findByIdAndUpdate(dreamId, {
       intake,
       reflection,
       action: { ...action, hookResults, completed: false },
     });
-
   },
-  { connection }
+  { connection },
 );
 
 worker.on("completed", (job: any) => console.log(`Job ${job.id} completed`));
-worker.on("failed", (job: any, err: any) => console.error(`Job ${job.id} failed:`, err));
+worker.on("failed", (job: any, err: any) =>
+  console.error(`Job ${job.id} failed:`, err),
+);
 
 export default worker;

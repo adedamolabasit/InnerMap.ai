@@ -1,10 +1,16 @@
-import { FC } from "react";
-import { SafeDreamParams, AgenticHook } from "@/shared/types/types";
+import { FC, useEffect, useState } from "react";
+import {
+  SafeDreamParams,
+  AgenticHook,
+  DreamResponse,
+} from "@/shared/types/types";
 import { Badge } from "@/shared/components/Ui/badge";
 import { Button } from "@/shared/components/Ui/button";
+import { useDreamManager } from "@/shared/hooks/useDreamManager";
 
 interface DreamInsightParams {
   safeDream: SafeDreamParams;
+  dream: DreamResponse;
   hookUIMap: Record<
     AgenticHook,
     { label: string; icon: React.ReactNode; onClick: () => void }
@@ -16,11 +22,29 @@ interface DreamInsightParams {
 
 export const DreamInsight: FC<DreamInsightParams> = ({
   safeDream,
+  dream,
   hookUIMap,
   isTodoistConnected,
   handleStartReflection,
   activeTab,
 }) => {
+  const [userFeedback, setUserFeedback] = useState("");
+
+  const [practiceStatus, setPracticeStatus] = useState<
+    "idle" | "completed" | "skipped"
+  >("idle");
+
+  const isCompleted = practiceStatus === "completed";
+  const isSkipped = practiceStatus === "skipped";
+
+  const { handleCompleteAction } = useDreamManager();
+
+  useEffect(() => {
+    if (isCompleted) {
+      handleCompleteAction(dream._id);
+    }
+  }, [isCompleted]);
+
   return (
     <div className="flex flex-col">
       <div className="p-6">
@@ -197,33 +221,86 @@ export const DreamInsight: FC<DreamInsightParams> = ({
                 ) : null}
 
                 {isTodoistConnected && safeDream.action?.id && (
-                  <Button
-                    onClick={() =>
-                      handleStartReflection(safeDream.action.id as string)
-                    }
-                    className="w-full bg-primary cursor-pointer hover:bg-primary/90 mt-4"
-                  >
-                    <svg
-                      className="w-4 h-4 mr-2"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                  <div className="space-y-4 mt-4">
+                    {practiceStatus === "idle" && (
+                      <Button
+                        onClick={() =>
+                          handleStartReflection(safeDream.action.id as string)
+                        }
+                        className="w-full bg-primary hover:bg-primary/90"
+                      >
+                        Start Reflection Practice
+                      </Button>
+                    )}
+
+                    {safeDream.action.completed && (
+                      <div className="p-4 border rounded-lg bg-emerald-500/5 border-emerald-500/20">
+                        <p className="text-sm text-emerald-600 font-medium">
+                          ✅ Practice completed
+                        </p>
+                      </div>
+                    )}
+
+                    {practiceStatus === "skipped" && (
+                      <div className="p-4 border rounded-lg bg-muted/30">
+                        <p className="text-sm text-muted-foreground">
+                          Practice skipped
+                        </p>
+                      </div>
+                    )}
+
+                    {practiceStatus === "idle" &&
+                      !safeDream.action.completed && (
+                        <div className="mt-4 p-4 rounded-lg border border-border/50 bg-muted/20 space-y-2">
+                          <p className="text-sm text-muted-foreground">
+                            Help improve your future insights — mark this
+                            practice as completed or skipped.
+                          </p>
+
+                          <div className="flex items-center gap-4">
+                            <label className="flex items-center gap-2 cursor-pointer">
+                              <input
+                                type="radio"
+                                name={`practice-${safeDream.action?.id}`}
+                                className="w-5 h-5 text-emerald-500 border-border rounded-full focus:ring-emerald-400"
+                                checked={isCompleted}
+                                onChange={() => setPracticeStatus("completed")}
+                              />
+                              <span className="text-sm text-foreground">
+                                ✅ Completed
+                              </span>
+                            </label>
+
+                            <label className="flex items-center gap-2 cursor-pointer">
+                              <input
+                                type="radio"
+                                name={`practice-${safeDream.action?.id}`}
+                                className="w-5 h-5 text-red-500 border-border rounded-full focus:ring-red-400"
+                                checked={isSkipped}
+                                onChange={() => setPracticeStatus("skipped")}
+                              />
+                              <span className="text-sm text-foreground">
+                                ❌ Skipped
+                              </span>
+                            </label>
+                          </div>
+
+                          <span className="block text-[11px] text-muted-foreground italic mt-1">
+                            Your feedback helps the AI learn and adapt future
+                            recommendations.
+                          </span>
+                        </div>
+                      )}
+
+                    {practiceStatus === "completed" && (
+                      <textarea
+                        value={userFeedback}
+                        onChange={(e) => setUserFeedback(e.target.value)}
+                        placeholder="Optional: what did you notice?"
+                        className="w-full p-3 text-sm rounded-lg border bg-background"
                       />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                    Start Reflection Practice
-                  </Button>
+                    )}
+                  </div>
                 )}
               </div>
             </div>

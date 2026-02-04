@@ -1,4 +1,4 @@
-import { openai } from "../services/openai.service";
+import { openai } from "../services/opik";
 
 type DreamAnalysisResult = {
   themes: string[];
@@ -39,7 +39,7 @@ ${dreamText}
   });
 
   const raw = response.output_text;
-
+  await openai.flush();
   try {
     return JSON.parse(raw) as DreamAnalysisResult;
   } catch {

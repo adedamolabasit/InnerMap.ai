@@ -5,6 +5,7 @@ import {
   startReflection,
   audioTranscribe,
   authUser,
+  completeAction
 } from "..";
 import {
   CreateDreamDTO,
@@ -29,6 +30,12 @@ export const useDeleteDream = () => {
 export const useStartReflection = () => {
   return useMutation<ApiResponse<{ url: string }>, Error, any>({
     mutationFn: (actionId: string) => startReflection(actionId),
+  });
+};
+
+export const useCompleteAction = () => {
+  return useMutation<ApiResponse<any>, Error, any>({
+    mutationFn: (actionId: string) => completeAction(actionId),
   });
 };
 

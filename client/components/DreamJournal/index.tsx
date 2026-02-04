@@ -142,7 +142,6 @@ export function DreamJournal({
             className="px-4 py-3 rounded-lg border border-input bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
           >
             <option value="date">Sort by Date</option>
-            <option value="title">Sort by Title</option>
           </select>
         </div>
 

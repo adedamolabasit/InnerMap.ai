@@ -1,14 +1,9 @@
 import { Request, Response } from "express";
-import { analyzeDreamIntake } from "../agents/intake.agent";
-import { analyzeReflection } from "../agents/reflection.agent";
-import { analyzeAction } from "../agents/action.agent";
 import Dream from "../models/Dream";
-import { executeAgenticHooks } from "../services/agenticTools";
-import { StoredAction } from "../models/types";
 import { AuthenticatedRequest } from "../types/auth";
 import { User } from "../models/User";
 import { addTodoistTask } from "../agents/tools/todoist";
-import { openai } from "../services/openai.service";
+import { openai } from "../services/opik";
 import { toFile } from "openai";
 import { validateBody } from "../utils";
 import { dreamQueue } from "../queues/queue";
@@ -115,27 +110,6 @@ export const submitDream = async (req: AuthenticatedRequest, res: Response) => {
   }
 };
 
-export const completeAction = async (req: Request, res: Response) => {
-  try {
-    const bodyError = validateBody(["dreamId"], req.body);
-    if (bodyError) return res.status(400).json({ error: bodyError });
-
-    const { dreamId } = req.body;
-    const dream = await Dream.findById(dreamId);
-    if (!dream) return res.status(404).json({ error: "Dream not found" });
-
-    if (dream.action) {
-      dream.action.completed = true;
-      dream.action.completedAt = new Date();
-      await dream.save();
-    }
-
-    res.json({ success: true, dream });
-  } catch (err) {
-    res.status(500).json({ error: "Failed to update action" });
-  }
-};
-
 export const getUserDreams = async (req: Request, res: Response) => {
   try {
     const userId = req.user?.id;
@@ -169,6 +143,22 @@ export const getDreamById = async (req: Request, res: Response) => {
   }
 };
 
+export const deleteDream = async (req: Request, res: Response) => {
+  try {
+    const { dreamId } = req.params;
+    if (!dreamId) return res.status(400).json({ error: "Missing dreamId" });
+
+    const dream = await Dream.findById(dreamId);
+    if (!dream) return res.status(404).json({ error: "Dream not found" });
+
+    await Dream.deleteOne({ _id: dreamId });
+
+    res.json({ success: true, message: "Dream deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to delete dream" });
+  }
+};
+
 export const startReflection = async (req: Request, res: Response) => {
   try {
     const bodyError = validateBody(["actionId"], req.body);
@@ -194,32 +184,39 @@ export const startReflection = async (req: Request, res: Response) => {
     const todoist = await addTodoistTask(
       profile.todoistAccessToken as string,
       dream.action,
-      dream.reflection
+      dream.reflection,
     );
 
     await Dream.updateOne(
       { userId, "action._id": actionId },
-      { $set: { todoisUrl: todoist.url } },
+      // { $set: { todoisUrl: "ke" } },
+      { $set: { todoisUrl: todoist?.url } },
     );
 
-    return res.status(200).json({ url: todoist.url });
+    // return res.status(200).json({ url: "jd" });
+    return res.status(200).json({ url: todoist?.url });
   } catch (err) {
     return res.status(500).json({ error: "Failed to fetch profile" });
   }
 };
 
-export const deleteDream = async (req: Request, res: Response) => {
+export const completeAction = async (req: Request, res: Response) => {
   try {
-    const { dreamId } = req.params;
-    if (!dreamId) return res.status(400).json({ error: "Missing dreamId" });
+    const bodyError = validateBody(["dreamId"], req.body);
+    if (bodyError) return res.status(400).json({ error: bodyError });
 
+    const { dreamId } = req.body;
     const dream = await Dream.findById(dreamId);
     if (!dream) return res.status(404).json({ error: "Dream not found" });
 
-    await Dream.deleteOne({ _id: dreamId });
+    if (dream.action) {
+      dream.action.completed = true;
+      dream.action.completedAt = new Date();
+      await dream.save();
+    }
 
-    res.json({ success: true, message: "Dream deleted successfully" });
+    res.json({ success: true, dream });
   } catch (err) {
-    res.status(500).json({ error: "Failed to delete dream" });
+    res.status(500).json({ error: "Failed to update action" });
   }
 };
