@@ -14,6 +14,7 @@ app.use(express.json());
 app.use(identifyUser);
 
 // authrnticatetoken middlewaare depends on identifUser token
+// ------I comment this out so as to allow user use guest mode for the purpose of the hackathon. The integration works fine
 // app.use(authenticateToken);
 
 app.use("/api", dreamRoutes, authRoutes);

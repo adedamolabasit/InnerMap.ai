@@ -88,12 +88,10 @@ export default function Home() {
     }
   };
 
-  // Loading state
   if (isInitialLoading && currentView !== "landing") {
     return <FullPageLoading message="Loading your dreams..." />;
   }
 
-  // Error state
   if (dreamsError || dreamError) {
     return (
       <FullPageError

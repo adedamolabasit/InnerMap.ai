@@ -3,11 +3,7 @@ import axios from "axios";
 import { User } from "../models/User";
 import jwt from "jsonwebtoken";
 
-
-export const authLogin = async (
-  req: Request,
-  res: Response,
-) => {
+export const authLogin = async (req: Request, res: Response) => {
   try {
     if (!req.user) {
       return res.status(401).json({ message: "Unauthorized" });
@@ -29,8 +25,15 @@ export const authLogin = async (
       { expiresIn: "7d" },
     );
 
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "none",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: "/",
+    });
+
     return res.status(200).json({
-      token,
       user: {
         id: user.id,
         type: req.user.type,

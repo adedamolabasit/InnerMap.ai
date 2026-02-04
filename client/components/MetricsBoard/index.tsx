@@ -42,7 +42,6 @@ export function MetricsBoard({ onBack, dreamCount }: InsightsDashboardProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       <div className="max-w-5xl mx-auto px-6 py-8">
-        {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="space-y-2">
             <h1 className="text-3xl font-bold text-foreground">
@@ -57,7 +56,6 @@ export function MetricsBoard({ onBack, dreamCount }: InsightsDashboardProps) {
           </Button>
         </div>
 
-        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <Card className="p-6 border-border bg-card">
             <div className="flex items-center justify-between">
@@ -96,7 +94,6 @@ export function MetricsBoard({ onBack, dreamCount }: InsightsDashboardProps) {
           </Card>
         </div>
 
-        {/* Weekly Chart */}
         <Card className="p-6 border-border bg-card mb-8">
           <h3 className="font-semibold text-foreground mb-6">
             Dreams This Week
@@ -128,7 +125,6 @@ export function MetricsBoard({ onBack, dreamCount }: InsightsDashboardProps) {
           </div>
         </Card>
 
-        {/* Insights Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {insights.map((insight, idx) => (
             <Card key={idx} className="p-6 border-border bg-card space-y-4">
@@ -149,7 +145,6 @@ export function MetricsBoard({ onBack, dreamCount }: InsightsDashboardProps) {
           ))}
         </div>
 
-        {/* AI Analysis Summary */}
         <Card className="p-8 border-border bg-gradient-to-br from-primary/5 to-accent/5 space-y-4">
           <h3 className="text-lg font-semibold text-foreground">
             Analysis Summary

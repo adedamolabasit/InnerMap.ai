@@ -35,7 +35,7 @@ export const useProfile = () => {
     queryKey: ["profile"],
     queryFn: () => getProfile(),
     staleTime: 0,
-    // refetchInterval: 2000,
+    refetchInterval: 2000,
     refetchOnWindowFocus: true,
   });
 };

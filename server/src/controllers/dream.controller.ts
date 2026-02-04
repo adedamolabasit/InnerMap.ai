@@ -189,11 +189,9 @@ export const startReflection = async (req: Request, res: Response) => {
 
     await Dream.updateOne(
       { userId, "action._id": actionId },
-      // { $set: { todoisUrl: "ke" } },
       { $set: { todoisUrl: todoist?.url } },
     );
 
-    // return res.status(200).json({ url: "jd" });
     return res.status(200).json({ url: todoist?.url });
   } catch (err) {
     return res.status(500).json({ error: "Failed to fetch profile" });
