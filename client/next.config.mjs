@@ -6,6 +6,15 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-}
+  webpack(config, { isServer }) {
+    // Ignore all test files from thread-stream
+    config.module.rules.push({
+      test: /thread-stream\/test/,
+      use: 'null-loader', // ignore these files
+    });
 
-export default nextConfig
+    return config;
+  },
+};
+
+export default nextConfig;
