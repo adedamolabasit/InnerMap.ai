@@ -76,4 +76,4 @@ copy .env.example to create .env
 - Dream updated with results
 
 ## Opik readme
-[text](https://github.com/adedamolabasit/InnerMap.ai/tree/main/server/src/agents/opik)
+[Link to opik readme.md on github](https://github.com/adedamolabasit/InnerMap.ai/tree/main/server/src/agents/opik)
