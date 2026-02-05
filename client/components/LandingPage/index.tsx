@@ -37,7 +37,14 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Capture your dreams, uncover patterns, and gain insights into your
-            subconscious with AI-powered analysis.
+            subconscious with AI-powered reflection.
+          </p>
+
+          <p className="text-sm text-muted-foreground max-w-3xl mx-auto mt-4 border-l-4 border-muted-foreground pl-4 italic">
+            <strong>Note:</strong> Dreams are symbolic and highly subjective.
+            The insights provided are meant for personal reflection and
+            self-awareness. They should not be used as a substitute for
+            professional advice or as a basis for major life decisions.
           </p>
         </div>
 
@@ -66,7 +73,8 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
             </div>
             <h3 className="font-semibold text-foreground">AI Analysis</h3>
             <p className="text-sm text-muted-foreground">
-              Get intelligent insights about themes and patterns in your dreams
+              Get gentle, reflective insights about themes and patterns in your
+              dreams
             </p>
           </div>
 

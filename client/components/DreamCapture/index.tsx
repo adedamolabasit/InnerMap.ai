@@ -1,4 +1,4 @@
-"use client";  
+"use client";
 
 import { useState, useRef } from "react";
 import { Button } from "@/shared/components/Ui/button";
@@ -130,7 +130,7 @@ export function DreamCapture({ onSave, onBack, isSaving }: DreamCaptureProps) {
                   <Button
                     variant="default"
                     onClick={handleStartRecording}
-                    className="flex-1"
+                    className="flex-1 cursor-pointer"
                   >
                     🎤 Start Recording
                   </Button>
@@ -138,7 +138,7 @@ export function DreamCapture({ onSave, onBack, isSaving }: DreamCaptureProps) {
                   <Button
                     variant="default"
                     onClick={handleStopRecording}
-                    className="flex-1 bg-destructive hover:bg-destructive/90"
+                    className="flex-1 bg-destructive hover:bg-destructive/90 cursor-pointer"
                   >
                     ⊘ Stop Recording
                   </Button>
@@ -172,7 +172,7 @@ export function DreamCapture({ onSave, onBack, isSaving }: DreamCaptureProps) {
                   variant="default"
                   onClick={handleSave}
                   disabled={isSaving}
-                  className="flex-1"
+                  className="flex-1 cursor-pointer"
                 >
                   {isSaving ? "Analyzing..." : "Save & Analyze"}
                 </Button>
@@ -180,7 +180,7 @@ export function DreamCapture({ onSave, onBack, isSaving }: DreamCaptureProps) {
                 <Button
                   variant="outline"
                   onClick={onBack}
-                  className="flex-1 bg-transparent"
+                  className="flex-1 bg-transparent cursor-pointer"
                 >
                   Discard
                 </Button>

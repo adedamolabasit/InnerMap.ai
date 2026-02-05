@@ -1,9 +1,7 @@
-"use client";  
+"use client";
 
 import { FC, useEffect, useState } from "react";
-import {
-  AgenticHook,
-} from "@/shared/types/types";
+import { AgenticHook } from "@/shared/types/types";
 import { Badge } from "@/shared/components/Ui/badge";
 import { Button } from "@/shared/components/Ui/button";
 import { useDreamManager } from "@/shared/hooks/useDreamManager";
@@ -216,7 +214,7 @@ export const DreamInsight: FC<DreamInsightParams> = ({
                         onClick={() =>
                           handleStartReflection(safeDream.action.id as string)
                         }
-                        className="w-full bg-primary hover:bg-primary/90"
+                        className="w-full bg-primary hover:bg-primary/90 cursor-pointer"
                       >
                         Start Reflection Practice
                       </Button>
