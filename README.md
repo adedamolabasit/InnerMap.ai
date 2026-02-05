@@ -9,9 +9,9 @@ Users can submit dreams by text or voice, receive symbolic insights, and get gen
 ---
 
 ## Project Structure
-/client → Next.js client
-/server → Express + Agent workers
-/server/src/services/opik → Observability & tracing
+- /client → Next.js client
+- /server → Express + Agent workers
+- /server/src/services/opik → Observability & tracing
 
 
 ---
