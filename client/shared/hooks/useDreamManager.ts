@@ -174,7 +174,6 @@ export const useDreamManager = () => {
   };
 
   const navigateToJournal = () => {
-    refetch();
     router.push(`${pathname}?view=journal`);
   };
 
