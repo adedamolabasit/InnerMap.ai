@@ -170,6 +170,7 @@ export const useDreamManager = () => {
 
   const navigateToInsights = () => {
     setCurrentView("insights");
+       router.push(`${pathname}?view=insights`);
   };
 
   const navigateToJournal = () => {
@@ -179,6 +180,7 @@ export const useDreamManager = () => {
 
   const navigateToCapture = () => {
     setCurrentView("capture");
+    router.push(`${pathname}?view=capture`);
   };
 
   const navigateToLanding = () => {
