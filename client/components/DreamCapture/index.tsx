@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { Button } from "@/shared/components/Ui/button";
 import { Card } from "@/shared/components/Ui/card";
 import { useToast } from "@/shared/hooks/useToast";
+import { useRouter, usePathname } from "next/navigation";
 
 interface DreamCaptureProps {
   onSave: (dream: string) => void;
@@ -13,10 +14,13 @@ interface DreamCaptureProps {
 
 type SpeechRecognitionType = any;
 
-export function DreamCapture({ onSave, onBack, isSaving }: DreamCaptureProps) {
+export function DreamCapture({ onSave, isSaving }: DreamCaptureProps) {
   const [dreamText, setDreamText] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [transcriptText, setTranscriptText] = useState("");
+
+  const router = useRouter();
+  const pathname = usePathname();
 
   const { toast } = useToast();
 
@@ -102,7 +106,11 @@ export function DreamCapture({ onSave, onBack, isSaving }: DreamCaptureProps) {
               Record what you remember when you wake up
             </p>
           </div>
-          <Button variant="ghost" onClick={onBack}>
+          <Button
+            variant="ghost"
+            className="cursor-pointer"
+            onClick={() => router.push(`${pathname}?view=journal`)}
+          >
             Back
           </Button>
         </div>
@@ -179,7 +187,7 @@ export function DreamCapture({ onSave, onBack, isSaving }: DreamCaptureProps) {
 
                 <Button
                   variant="outline"
-                  onClick={onBack}
+                  onClick={() => router.push(`${pathname}?view=journal`)}
                   className="flex-1 bg-transparent cursor-pointer"
                 >
                   Discard

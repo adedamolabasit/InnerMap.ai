@@ -4,13 +4,13 @@ import { Button } from "@/shared/components/Ui/button";
 import { Card } from "@/shared/components/Ui/card";
 import { insights, weeklyData } from "@/shared/config";
 import { InsightsDashboardProps } from "@/shared/types/types";
+import { useRouter, usePathname } from "next/navigation";
 
-
-
-export function MetricsBoard({ onBack, dreamCount }: InsightsDashboardProps) {
-
-
+export function MetricsBoard({ dreamCount }: InsightsDashboardProps) {
   const maxDreams = Math.max(...weeklyData.map((d) => d.dreams)) || 1;
+
+  const router = useRouter();
+  const pathname = usePathname();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
@@ -24,7 +24,10 @@ export function MetricsBoard({ onBack, dreamCount }: InsightsDashboardProps) {
               Patterns and themes from your dreams
             </p>
           </div>
-          <Button variant="ghost" onClick={onBack}>
+          <Button
+            variant="ghost"
+            onClick={() => router.push(`${pathname}?view=journal`)}
+          >
             Back
           </Button>
         </div>
