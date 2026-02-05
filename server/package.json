@@ -7,7 +7,8 @@
     "dev": "tsx watch src/server.ts",
     "worker": "tsx watch src/agents/workers/aiBackground.worker",
     "start:all": "concurrently \"npm run dev\" \"npm run worker\"",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
@@ -32,7 +33,6 @@
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
-    "@types/express-validator": "^3.0.2",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/multer": "^2.0.0",
     "@types/node": "^25.0.10",

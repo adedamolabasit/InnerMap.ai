@@ -10,5 +10,4 @@
     "moduleResolution": "node"
   },
   "include": ["src"],
-  "files": ["types.d.ts"]
 }
