@@ -1,4 +1,4 @@
-export const API_BASE_URL =" https://innermapai-production.up.railway.app/api";
+export const API_BASE_URL ="https://innermapai-production.up.railway.app/api";
 
 export function getOrCreateVisitorId(): string {
   if (typeof window === "undefined") return "server-visitor";
