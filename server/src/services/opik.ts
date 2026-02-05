@@ -6,9 +6,9 @@ import 'dotenv/config';
 
 require('dotenv').config();
 
-export const openai = trackOpenAI(baseOpenAI);
+export const openaiOpik = trackOpenAI(baseOpenAI);
 
-export const openaiThread = new Opik({
+export const openaiOpikThread = new Opik({
   apiUrl: "https://www.comet.com/opik/api", 
   apiKey: process.env.OPIK_API_KEY,
   projectName: "innermind-agent",

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "worker": "tsx watch src/workers/dreamWorker.ts",
+    "worker": "tsx watch src/agents/workers/aiBackground.worker",
     "start:all": "concurrently \"npm run dev\" \"npm run worker\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

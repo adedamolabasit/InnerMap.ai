@@ -99,7 +99,6 @@ export interface SafeDreamParams {
     id?: string;
   };
 }
-
 export interface DreamInsightCard {
   id:
     | "symbols"
@@ -115,14 +114,12 @@ export interface DreamInsightCard {
   summary: string;
   details: ReactNode;
 }
-
 export type AgenticHook =
   | "calendar:add"
   | "reminder:set"
   | "todo:add"
   | "doc:write"
   | "notion:add";
-
 export interface DreamDetailsProps {
   dream: DreamResponse;
   profile: UserProfileResponse;
@@ -131,7 +128,6 @@ export interface DreamDetailsProps {
   onDelete: (id: string) => void;
   refetchDream: () => void;
 }
-
 export interface Dream {
   id: string;
   title: string;
@@ -139,7 +135,6 @@ export interface Dream {
   date: string;
   mood?: string;
 }
-
 export interface DreamJournalProps {
   dreams: DreamListResponse[];
   onNewDream: () => void;
@@ -148,11 +143,31 @@ export interface DreamJournalProps {
   isLoading?: boolean;
   error?: Error | null;
 }
-
 export interface AudioTranscribeInput {
   audio: Blob;
 }
-
 export interface AudioTranscribeResponse {
   text: string;
+}
+export interface DreamInsightParams {
+  safeDream: SafeDreamParams;
+  dream: DreamResponse;
+  hookUIMap: Record<
+    AgenticHook,
+    { label: string; icon: React.ReactNode; onClick: () => void }
+  >;
+  isTodoistConnected: boolean;
+  handleStartReflection: (actionId: string) => void;
+  activeTab: string;
+}
+export interface LandingPageProps {
+  onGetStarted: () => void;
+}
+export interface InsightsDashboardProps {
+  onBack: () => void;
+  dreamCount: number;
+}
+export interface ProfileParams {
+  safeDream: SafeDreamParams;
+  dream: DreamResponse;
 }

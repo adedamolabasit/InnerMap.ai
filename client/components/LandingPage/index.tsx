@@ -1,10 +1,7 @@
 "use client";
 
 import { Button } from "@/shared/components/Ui/button";
-
-interface LandingPageProps {
-  onGetStarted: () => void;
-}
+import { LandingPageProps } from "@/shared/types/types";
 
 export function LandingPage({ onGetStarted }: LandingPageProps) {
   return (

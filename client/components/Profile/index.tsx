@@ -2,8 +2,6 @@
 
 import { FC } from "react";
 import { Card } from "@/shared/components/Ui/card";
-import { SafeDreamParams } from "@/shared/types/types";
-import { DreamResponse } from "@/shared/types/types";
 import {
   Tooltip,
   TooltipContent,
@@ -11,11 +9,9 @@ import {
   TooltipTrigger,
 } from "@/shared/components/Ui/tooltip";
 import { getOrCreateVisitorId } from "@/api/config";
+import { ProfileParams } from "@/shared/types/types";
 
-interface ProfileParams {
-  safeDream: SafeDreamParams;
-  dream: DreamResponse;
-}
+
 
 export const Profile: FC<ProfileParams> = ({ safeDream, dream }) => {
   const getAgencyColor = (percentage: number) => {

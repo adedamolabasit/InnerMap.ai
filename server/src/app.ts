@@ -4,12 +4,13 @@ import dreamRoutes from "./routes/dream.routes";
 import authRoutes from "./routes/auth.routes";
 import { identifyUser } from "./middleware/identity.middleware";
 // import { authenticateToken } from "./middleware/authenticate.middleware";
+import "dotenv/config";
+
+require("dotenv").config();
 
 const app = express();
 
-const allowedOrigins = [
-  "https://inner-map-ai.vercel.app",
-];
+const allowedOrigins = [process.env.ALLOWED_CLIENT_URL || ""];
 
 app.use(
   cors({

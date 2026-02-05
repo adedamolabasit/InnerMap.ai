@@ -2,25 +2,12 @@
 
 import { FC, useEffect, useState } from "react";
 import {
-  SafeDreamParams,
   AgenticHook,
-  DreamResponse,
 } from "@/shared/types/types";
 import { Badge } from "@/shared/components/Ui/badge";
 import { Button } from "@/shared/components/Ui/button";
 import { useDreamManager } from "@/shared/hooks/useDreamManager";
-
-interface DreamInsightParams {
-  safeDream: SafeDreamParams;
-  dream: DreamResponse;
-  hookUIMap: Record<
-    AgenticHook,
-    { label: string; icon: React.ReactNode; onClick: () => void }
-  >;
-  isTodoistConnected: boolean;
-  handleStartReflection: (actionId: string) => void;
-  activeTab: string;
-}
+import { DreamInsightParams } from "@/shared/types/types";
 
 export const DreamInsight: FC<DreamInsightParams> = ({
   safeDream,

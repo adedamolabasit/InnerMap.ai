@@ -1,4 +1,4 @@
-import { openai } from "../services/opik";
+import { openaiOpik } from "../services/opik";
 
 type DreamAnalysisResult = {
   themes: string[];
@@ -8,7 +8,7 @@ type DreamAnalysisResult = {
 export const analyzeDreamAgent = async (
   dreamText: string,
 ): Promise<DreamAnalysisResult> => {
-  const response = await openai.responses.create({
+  const response = await openaiOpik.responses.create({
     model: "gpt-4.1-mini",
     input: [
       {
@@ -39,7 +39,7 @@ ${dreamText}
   });
 
   const raw = response.output_text;
-  await openai.flush();
+  await openaiOpik.flush();
   try {
     return JSON.parse(raw) as DreamAnalysisResult;
   } catch {

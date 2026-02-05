@@ -1,4 +1,5 @@
 import { Types } from "mongoose";
+import type { Multer } from "multer";
 
 declare global {
   namespace Express {
@@ -9,6 +10,7 @@ declare global {
 
     interface Request {
       user?: User;
+      file?: Multer.File;
     }
   }
 }

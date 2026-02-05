@@ -103,7 +103,9 @@ export const authTodoisCallback = async (req: Request, res: Response) => {
       },
     );
 
-    res.redirect(`http://localhost:3000/?view=details&dreamId=${dreamId}`);
+    res.redirect(
+      `${process.env.ALLOWED_CLIENT_URL}/?view=details&dreamId=${dreamId}`,
+    );
   } catch (err) {
     res.status(500).json({ error: "Todoist auth failed" });
   }

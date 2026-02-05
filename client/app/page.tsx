@@ -14,7 +14,7 @@ import {
   DreamNotFound,
 } from "@/shared/components/AppStates";
 
-function HomeContent()  {
+function HomeContent() {
   const {
     currentView,
     selectedDream,
@@ -128,10 +128,9 @@ function HomeContent()  {
   );
 }
 
-
 export default function Home() {
   return (
-    <Suspense fallback={<FullPageLoading message="Loading your dreams..." />}>
+    <Suspense fallback={<FullPageLoading message="Loading page..." />}>
       <HomeContent />
     </Suspense>
   );

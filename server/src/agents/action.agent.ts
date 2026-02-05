@@ -1,7 +1,6 @@
-import { openai } from "../services/opik";
+import { openaiOpik } from "../services/opik";
 import { ActionAgentResult } from "./types";
 import { GLOBAL_SYSTEM_PROMPT } from "./opik/prompts";
-import { openaiThread } from "../services/opik";
 
 export const actionAgentPrompt = (
   themes: string[],
@@ -75,12 +74,12 @@ export const analyzeAction = async (
   agency: number,
   previousActionCompleted?: boolean,
 ): Promise<ActionAgentResult> => {
-  const response = await openai.responses.create({
+  const response = await openaiOpik.responses.create({
     model: "gpt-4.1-mini",
     input: actionAgentPrompt(themes, agency, previousActionCompleted),
   });
 
-  await openai.flush();
+  await openaiOpik.flush();
   const raw = response.output_text.replace(/```/g, "").trim();
   return JSON.parse(raw) as ActionAgentResult;
 };

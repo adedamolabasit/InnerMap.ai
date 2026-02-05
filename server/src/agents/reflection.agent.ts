@@ -1,4 +1,4 @@
-import { openai } from "../services/opik";
+import { openaiOpik } from "../services/opik";
 import { ReflectionResult } from "./types";
 
 export const reflectionAgentPrompt = (dreamText: string) => `
@@ -19,12 +19,12 @@ Return JSON:
 export const analyzeReflection = async (
   dreamText: string,
 ): Promise<ReflectionResult & { suggested_action_hint: string }> => {
-  const response = await openai.responses.create({
+  const response = await openaiOpik.responses.create({
     model: "gpt-4.1-mini",
     input: reflectionAgentPrompt(dreamText),
   });
 
-  await openai.flush();
+  await openaiOpik.flush();
   const match = response.output_text.match(/\{[\s\S]*\}/);
   if (!match) throw new Error("No JSON found in AI output");
 

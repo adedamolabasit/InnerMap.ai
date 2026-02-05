@@ -2,40 +2,13 @@
 
 import { Button } from "@/shared/components/Ui/button";
 import { Card } from "@/shared/components/Ui/card";
+import { insights, weeklyData } from "@/shared/config";
+import { InsightsDashboardProps } from "@/shared/types/types";
 
-interface InsightsDashboardProps {
-  onBack: () => void;
-  dreamCount: number;
-}
+
 
 export function MetricsBoard({ onBack, dreamCount }: InsightsDashboardProps) {
-  const insights = [
-    {
-      category: "Recurring Themes",
-      items: ["Journeys", "Water", "Flying", "People"],
-      color: "bg-primary/10 text-primary",
-    },
-    {
-      category: "Common Emotions",
-      items: ["Curiosity", "Wonder", "Anticipation", "Calm"],
-      color: "bg-accent/10 text-accent",
-    },
-    {
-      category: "Symbols",
-      items: ["Mountains", "Doors", "Light", "Nature"],
-      color: "bg-secondary/10 text-secondary",
-    },
-  ];
 
-  const weeklyData = [
-    { day: "Mon", dreams: 1 },
-    { day: "Tue", dreams: 2 },
-    { day: "Wed", dreams: 1 },
-    { day: "Thu", dreams: 0 },
-    { day: "Fri", dreams: 2 },
-    { day: "Sat", dreams: 3 },
-    { day: "Sun", dreams: 1 },
-  ];
 
   const maxDreams = Math.max(...weeklyData.map((d) => d.dreams)) || 1;
 

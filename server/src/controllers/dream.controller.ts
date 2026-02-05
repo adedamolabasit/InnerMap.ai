@@ -3,7 +3,7 @@ import Dream from "../models/Dream";
 import { AuthenticatedRequest } from "../types/auth";
 import { User } from "../models/User";
 import { addTodoistTask } from "../agents/tools/todoist";
-import { openai } from "../services/opik";
+import { openaiOpik } from "../services/opik";
 import { toFile } from "openai";
 import { validateBody } from "../utils";
 import { dreamQueue } from "../queues/queue";
@@ -20,7 +20,7 @@ export const audioTranscribe = async (req: Request, res: Response) => {
       type: req.file.mimetype,
     });
 
-    const transcription = await openai.audio.transcriptions.create({
+    const transcription = await openaiOpik.audio.transcriptions.create({
       file: audioFile,
       model: "gpt-4o-transcribe",
     });
