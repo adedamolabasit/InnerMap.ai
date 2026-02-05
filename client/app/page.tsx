@@ -36,7 +36,8 @@ function HomeContent() {
     navigateToJournal,
     navigateToCapture,
     navigateToLanding,
-    refetchDream
+    refetchDream,
+    refetch,
   } = useDreamManager();
 
   const renderView = () => {
@@ -59,6 +60,7 @@ function HomeContent() {
             onBack={() => navigateToLanding()}
             onSelectDream={handleSelectDream}
             isLoading={loadingAllDreams}
+            refetch={refetch}
           />
         );
       case "insights":

@@ -56,7 +56,7 @@ export interface DreamResponse {
     content: string;
     duration?: string;
     agenticHooks: string[];
-    completed: boolean
+    completed: boolean;
     _id: string;
   };
   createdAt: string;
@@ -95,7 +95,7 @@ export interface SafeDreamParams {
     content: string;
     duration?: string;
     agenticHooks: string[];
-    completed: boolean
+    completed: boolean;
     id?: string;
   };
 }
@@ -142,6 +142,7 @@ export interface DreamJournalProps {
   onSelectDream: (dream: string) => void;
   isLoading?: boolean;
   error?: Error | null;
+  refetch: () => void;
 }
 export interface AudioTranscribeInput {
   audio: Blob;

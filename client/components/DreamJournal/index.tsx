@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/shared/components/Ui/button";
 import { Card } from "@/shared/components/Ui/card";
 import { DreamJournalProps } from "@/shared/types/types";
@@ -10,6 +10,7 @@ import {
   EmptyDreams,
   EmptySearch,
 } from "@/shared/components/AppStates";
+import { ref } from "process";
 
 export function DreamJournal({
   dreams,
@@ -18,6 +19,7 @@ export function DreamJournal({
   onSelectDream,
   isLoading,
   error,
+  refetch,
 }: DreamJournalProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<"date" | "title">("date");
@@ -100,6 +102,9 @@ export function DreamJournal({
       </div>
     );
   }
+  useEffect(() => {
+    refetch;
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
