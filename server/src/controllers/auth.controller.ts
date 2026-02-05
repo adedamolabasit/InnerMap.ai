@@ -2,6 +2,10 @@ import { Request, Response } from "express";
 import axios from "axios";
 import { User } from "../models/User";
 import jwt from "jsonwebtoken";
+import 'dotenv/config';
+
+
+require('dotenv').config();
 
 export const authLogin = async (req: Request, res: Response) => {
   try {
