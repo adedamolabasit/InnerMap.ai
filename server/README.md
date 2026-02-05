@@ -52,7 +52,7 @@ All outputs are strict JSON.
 npm install
 ```
 
-- This run the server and work concurrently
+- This run the server and worker concurrently
 ```bash
 npm run start:all
 ```
