@@ -6,11 +6,15 @@ interface RateLimitRecord {
 }
 
 const rateLimitMap = new Map<string, RateLimitRecord>();
- 
-const WINDOW_MS = 60 * 1000; 
-const MAX_REQUESTS = 30; 
 
-export const rateLimiter = (req: Request, res: Response, next: NextFunction) => {
+const WINDOW_MS = 60 * 2000;
+const MAX_REQUESTS = 50;
+
+export const rateLimiter = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const ip = req.ip || req.headers["x-forwarded-for"]?.toString() || "unknown";
   const currentTime = Date.now();
 

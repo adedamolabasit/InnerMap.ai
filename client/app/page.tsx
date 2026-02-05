@@ -36,6 +36,7 @@ function HomeContent() {
     navigateToJournal,
     navigateToCapture,
     navigateToLanding,
+    refetchDream
   } = useDreamManager();
 
   const renderView = () => {
@@ -81,7 +82,7 @@ function HomeContent() {
             onBack={() => navigateToJournal()}
             isLoading={loadingDream}
             onDelete={handleDeleteDream}
-            refetchDream={() => {}}
+            refetchDream={refetchDream}
           />
         );
       default:

@@ -6,6 +6,7 @@ import {
   UserProfileResponse,
   AudioTranscribeInput,
   AudioTranscribeResponse,
+  DreamResponse
 } from "../shared/types/types";
 import { apiClient } from "./config";
 
@@ -24,8 +25,8 @@ export const getUserDreams = async (): Promise<DreamListResponse[]> => {
 
 export const getDreamById = async (
   dreamId: string,
-): Promise<ApiResponse<DreamAnalysis>> => {
-  return apiClient<ApiResponse<DreamAnalysis>>(`/dream/${dreamId}`);
+): Promise<ApiResponse<DreamResponse>> => {
+  return apiClient<ApiResponse<DreamResponse>>(`/dream/${dreamId}`);
 };
 
 export const deleteDream = async (

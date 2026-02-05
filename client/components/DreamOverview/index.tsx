@@ -143,7 +143,6 @@ export function DreamOverview({
   if (isLoading || !dream) {
     return <ContentLoading message="Loading dream details..." />;
   }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">

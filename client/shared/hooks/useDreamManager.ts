@@ -27,10 +27,9 @@ export const useDreamManager = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-  const id = searchParams.get("dreamId");
-  setDreamIdFromUrl(id);
-}, [searchParams]);
-
+    const id = searchParams.get("dreamId");
+    setDreamIdFromUrl(id);
+  }, [searchParams]);
 
   const {
     data: dreams = [],
@@ -174,6 +173,7 @@ export const useDreamManager = () => {
   };
 
   const navigateToJournal = () => {
+    refetch();
     router.push(`${pathname}?view=journal`);
   };
 
