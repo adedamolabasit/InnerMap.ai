@@ -109,7 +109,7 @@ export function DreamCapture({ onSave, isSaving }: DreamCaptureProps) {
           <Button
             variant="ghost"
             className="cursor-pointer"
-            onClick={() => router.push(`${pathname}?view=journal`)}
+            onClick={() => router.push(`${pathname}?view=landing`)}
           >
             Back
           </Button>
@@ -187,7 +187,7 @@ export function DreamCapture({ onSave, isSaving }: DreamCaptureProps) {
 
                 <Button
                   variant="outline"
-                  onClick={() => router.push(`${pathname}?view=journal`)}
+                  onClick={() => router.push(`${pathname}?view=landing`)}
                   className="flex-1 bg-transparent cursor-pointer"
                 >
                   Discard

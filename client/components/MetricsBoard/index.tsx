@@ -26,7 +26,7 @@ export function MetricsBoard({ dreamCount }: InsightsDashboardProps) {
           </div>
           <Button
             variant="ghost"
-            onClick={() => router.push(`${pathname}?view=journal`)}
+            onClick={() => router.push(`${pathname}?view=landing`)}
           >
             Back
           </Button>
