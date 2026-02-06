@@ -102,9 +102,6 @@ export function DreamJournal({
       </div>
     );
   }
-  useEffect(() => {
-    refetch;
-  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
