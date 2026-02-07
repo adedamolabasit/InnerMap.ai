@@ -8,7 +8,7 @@ import { Card } from "@/shared/components/Ui/card";
 export const DreamAnalysis: FC<{ analysisCards: DreamInsightCard[] }> = ({
   analysisCards,
 }) => {
-  const [selectedAnalysis, setSelectedAnalysis] = useState<string | null>(null);
+  const [selectedAnalysis, setSelectedAnalysis] = useState<string | null>('symbols');
 
   return (
     <div>
